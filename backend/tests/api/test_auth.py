@@ -1,6 +1,7 @@
 import sys
 import os
 import uuid
+from unittest.mock import patch
 
 # Ensure backend root directory is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -11,40 +12,40 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_user_sync_flow():
-    # Use random UUID email to ensure 100% test isolation across multiple test runs
-    test_email = f"test-{uuid.uuid4()}@gmail.com"
+def test_missing_authorization_header():
+    response = client.get("/api/auth/me")
+    assert response.status_code == 401
+    assert "detail" in response.json()
 
-    test_payload = {
+
+def test_malformed_authorization_header():
+    response = client.get("/api/auth/me", headers={"Authorization": "InvalidTokenFormat"})
+    assert response.status_code == 401
+
+
+def test_invalid_google_id_token():
+    response = client.get("/api/auth/me", headers={"Authorization": "Bearer fake_invalid_token"})
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid Google ID Token"
+
+
+@patch("app.core.security.id_token.verify_oauth2_token")
+def test_valid_google_token_auto_sync_me(mock_verify):
+    test_email = f"auto_me_{uuid.uuid4()}@gmail.com"
+    mock_verify.return_value = {
         "email": test_email,
-        "name": "Jeeva Sync Test",
-        "picture": "https://example.com/jeeva.png",
+        "name": "Auto Sync User",
+        "picture": "https://example.com/picture.png",
     }
 
-    # 1. Initial Sync -> User Creation (created = True)
-    response = client.post("/api/auth/sync", json=test_payload)
+    # Call GET /api/auth/me with mock valid Bearer token
+    headers = {"Authorization": "Bearer valid_mock_token"}
+    response = client.get("/api/auth/me", headers=headers)
+
     assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
     data = response.json()
 
-    assert data["email"] == test_payload["email"]
-    assert data["name"] == test_payload["name"]
-    assert data["profile_picture"] == test_payload["picture"]
-    assert data["created"] is True
+    assert data["email"] == test_email
+    assert data["name"] == "Auto Sync User"
+    assert data["profile_picture"] == "https://example.com/picture.png"
     assert "id" in data
-
-    # 2. Repeat Sync -> User Update (created = False)
-    updated_payload = {
-        "email": test_email,
-        "name": "Jeeva Sync Updated",
-        "picture": "https://example.com/jeeva_new.png",
-    }
-
-    response_repeat = client.post("/api/auth/sync", json=updated_payload)
-    assert response_repeat.status_code == 200
-    data_repeat = response_repeat.json()
-
-    assert data_repeat["email"] == updated_payload["email"]
-    assert data_repeat["name"] == updated_payload["name"]
-    assert data_repeat["profile_picture"] == updated_payload["picture"]
-    assert data_repeat["created"] is False
-    assert data_repeat["id"] == data["id"]

@@ -7,3 +7,5 @@ pgvector>=0.2.5,<0.3.0
 python-dotenv>=1.0.1,<2.0.0
 pydantic-settings>=2.2.0,<3.0.0
 email-validator>=2.0.0,<3.0.0
+google-auth>=2.0.0,<3.0.0
+google-auth-oauthlib>=1.0.0,<2.0.0

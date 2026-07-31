@@ -14,18 +14,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     "ba33e4914440fff6ceb17f4d868656e11b2cce74de5dd1368bbc8b04ade5bcfb",
   callbacks: {
     async signIn({ user, account, profile }) {
-      // Extensible callback for Phase 3.3 Backend User Synchronization
       return true
     },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub
       }
+      // Expose session.auth.googleIdToken for FastAPI Bearer token Authorization headers
+      session.auth = {
+        googleIdToken: (token.googleIdToken as string) || "",
+      }
       return session
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
+      }
+      if (account?.id_token) {
+        token.googleIdToken = account.id_token
       }
       return token
     },
