@@ -1,6 +1,9 @@
 import os
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker
+
+from app.db.base import Base
+import app.models  # Import all models to register them with Base.metadata
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
@@ -15,10 +18,6 @@ engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-class Base(DeclarativeBase):
-    pass
-
-
 def get_db():
     db = SessionLocal()
     try:
@@ -28,13 +27,23 @@ def get_db():
 
 
 def test_db_connection():
-    """Test database connection and verify pgvector extension."""
+    """Test database connection, verify pgvector extension, and create/verify all 9 tables."""
     try:
         with engine.connect() as conn:
             # Enable pgvector extension if not present
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
             conn.commit()
-            result = conn.execute(text("SELECT 1;")).scalar()
-            return {"status": "connected", "database": "postgresql", "pgvector": "enabled", "test_query": result}
+            
+            # Create all tables registered in Base.metadata
+            Base.metadata.create_all(bind=engine)
+
+            tables = list(Base.metadata.tables.keys())
+            return {
+                "status": "connected",
+                "database": "postgresql",
+                "pgvector": "enabled",
+                "registered_tables_count": len(tables),
+                "tables": tables,
+            }
     except Exception as e:
         return {"status": "error", "message": str(e)}
