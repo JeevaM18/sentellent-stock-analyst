@@ -1,6 +1,7 @@
 import uuid
 from typing import TYPE_CHECKING
 
+# pyrefly: ignore [missing-import]
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
