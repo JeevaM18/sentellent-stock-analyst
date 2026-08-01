@@ -23,13 +23,14 @@ def test_malformed_authorization_header():
     assert response.status_code == 401
 
 
-def test_invalid_google_id_token():
+@patch("google.oauth2.id_token.verify_oauth2_token", side_effect=ValueError("Invalid token"))
+def test_invalid_google_id_token(mock_verify):
     response = client.get("/api/auth/me", headers={"Authorization": "Bearer fake_invalid_token"})
     assert response.status_code == 401
     assert response.json()["detail"] == "Invalid Google ID Token"
 
 
-@patch("app.core.security.id_token.verify_oauth2_token")
+@patch("google.oauth2.id_token.verify_oauth2_token")
 def test_valid_google_token_auto_sync_me(mock_verify):
     test_email = f"auto_me_{uuid.uuid4()}@gmail.com"
     mock_verify.return_value = {
