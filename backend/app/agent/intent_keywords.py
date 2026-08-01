@@ -1,5 +1,20 @@
 """Keyword registries for intent classification."""
 
+MEMORY_KEYWORDS = [
+    "remember",
+    "forget",
+    "my profile",
+    "my preferences",
+    "what do you know about me",
+    "my risk",
+    "i prefer",
+    "i dislike",
+    "i avoid",
+    "clear my memory",
+    "update my profile",
+    "investor profile",
+]
+
 FUNDAMENTALS_KEYWORDS = [
     "pe",
     "p/e",

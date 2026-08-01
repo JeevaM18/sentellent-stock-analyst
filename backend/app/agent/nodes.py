@@ -6,6 +6,8 @@ from langchain_core.runnables import RunnableConfig
 from app.agent.planner import AgentPlanner, ToolPlan
 from app.agent.prompts import AGENT_SYSTEM_PROMPT
 from app.agent.state import AgentState
+from app.investor_memory.builder import MemoryBuilder
+from app.investor_memory.service import InvestorMemoryService
 from app.llm.service import GenerationService
 from app.rag.types import RAGContext
 from app.retrieval.service import RetrieverService
@@ -107,16 +109,35 @@ def executor_node(state: AgentState, config: RunnableConfig | None = None) -> Ag
 
 def generate_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
     """
-    Node executing LLM answer generation based on system prompt, chat history, and active context.
+    Node executing LLM answer generation based on system prompt, chat history,
+    personalized investor memory context, and active context.
     """
     services = state.get("services", {})
     cfg = (config or {}).get("configurable", {}) if isinstance(config, dict) else {}
 
     gen_service: GenerationService = services.get("generation_service") or cfg.get("generation_service") or GenerationService()
+    db = services.get("db") or cfg.get("db")
+    user_id = state.get("user_id")
 
     start_time = time.perf_counter()
 
-    active_context = state.get("context") or state.get("retrieved_context", "")
+    # Prepend Investor Profile Memory if available
+    memory_prompt_str = ""
+    if db and user_id:
+        try:
+            mem = InvestorMemoryService.get_memory(db, user_id)
+            mem_ctx = MemoryBuilder.build(mem)
+            if mem_ctx.has_profile:
+                memory_prompt_str = mem_ctx.prompt_context
+        except Exception as exc:
+            logger.warning("Error building investor memory context in generate_node: %s", exc)
+
+    tool_context = state.get("context") or state.get("retrieved_context", "")
+
+    if memory_prompt_str:
+        active_context = f"{memory_prompt_str}\n\n{tool_context}"
+    else:
+        active_context = tool_context
 
     rag_context = RAGContext(
         question=state.get("question", ""),

@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from app.agent.intent_keywords import (
     COMBINED_KEYWORDS,
     FUNDAMENTALS_KEYWORDS,
+    MEMORY_KEYWORDS,
     WATCHLIST_KEYWORDS,
 )
 
@@ -30,6 +31,7 @@ class AgentPlanner:
         q = question.lower().strip()
         tokens = [t for t in re.split(r'[\s,\.\?\!]+', q) if len(t) >= 2]
 
+        has_memory = any(kw in q for kw in MEMORY_KEYWORDS)
         has_combined = any(kw in q for kw in COMBINED_KEYWORDS)
         has_fundamentals = any(kw in q for kw in FUNDAMENTALS_KEYWORDS)
         has_watchlist = any(kw in q for kw in WATCHLIST_KEYWORDS)
@@ -44,8 +46,16 @@ class AgentPlanner:
 
         tools: list[ToolCall] = []
 
-        if has_combined or (has_fundamentals and ("news" in q or "today" in q)):
-            # Multi-tool planning
+        if has_memory:
+            action = "READ"
+            if "forget" in q or "clear" in q or "delete" in q:
+                action = "DELETE"
+            elif "remember" in q or "prefer" in q or "dislike" in q:
+                action = "WRITE"
+            elif "refresh" in q or "rebuild" in q:
+                action = "REFRESH"
+            tools.append(ToolCall(name="memory", arguments={"action": action, "query": question}))
+        elif has_combined or (has_fundamentals and ("news" in q or "today" in q)):
             tools.append(ToolCall(name="fundamentals", arguments={"query": question, "ticker": potential_ticker}))
             tools.append(ToolCall(name="retrieval", arguments={"query": question, "top_k": 5}))
         elif has_fundamentals:
