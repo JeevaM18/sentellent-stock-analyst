@@ -10,6 +10,7 @@ class AgentState(TypedDict):
     conversation_id: UUID | None
     question: str
     chat_history: str
+    context: str
     retrieved_context: str
     tool_results: dict[str, Any]
     final_answer: str

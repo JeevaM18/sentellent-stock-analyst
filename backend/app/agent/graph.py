@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_agent_graph():
-    """Construct and compile the LangGraph Agent StateGraph workflow."""
+    """Construct and compile the LangGraph Agent StateGraph workflow with intelligent intent routing."""
     workflow = StateGraph(AgentState)
 
     # Add Nodes
@@ -33,8 +33,22 @@ def build_agent_graph():
 
     # Add Edges
     workflow.add_edge(START, "router")
-    workflow.add_conditional_edges("router", route_decision, {"retrieve": "retrieve"})
+    
+    # Conditional Edges from Router based on Intent classification
+    workflow.add_conditional_edges(
+        "router",
+        route_decision,
+        {
+            "retrieve": "retrieve",
+            "fundamentals": "fundamentals",
+            "watchlist": "watchlist",
+        },
+    )
+
+    # Convergence Edges to Answer Generation Node
     workflow.add_edge("retrieve", "generate")
+    workflow.add_edge("fundamentals", "generate")
+    workflow.add_edge("watchlist", "generate")
     workflow.add_edge("generate", END)
 
     return workflow.compile()
