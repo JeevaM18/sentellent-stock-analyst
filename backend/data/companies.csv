@@ -1,0 +1,98 @@
+ticker,company_name,exchange,nse_symbol,bse_symbol,isin,sector,industry
+RELIANCE,Reliance Industries Ltd,NSE,RELIANCE,500325,INE002A01018,Energy,Oil & Gas
+TCS,Tata Consultancy Services Ltd,NSE,TCS,532540,INE467B01029,IT,Software Services
+INFY,Infosys Ltd,NSE,INFY,500209,INE009A01021,IT,Software Services
+HDFCBANK,HDFC Bank Ltd,NSE,HDFCBANK,500180,INE040A01034,Banking,Private Bank
+ICICIBANK,ICICI Bank Ltd,NSE,ICICIBANK,532174,INE090A01021,Banking,Private Bank
+SBIN,State Bank of India,NSE,SBIN,500112,INE062A01020,Banking,Public Bank
+BHARTIARTL,Bharti Airtel Ltd,NSE,BHARTIARTL,532454,INE397D01024,Telecom,Telecommunication Services
+ITC,ITC Ltd,NSE,ITC,500875,INE154A01025,FMCG,Tobacco & Consumer Goods
+LTIM,LTIMindtree Ltd,NSE,LTIM,540005,INE214T01019,IT,Software Services
+LT,Larsen & Toubro Ltd,NSE,LT,500510,INE018A01030,Infrastructure,Construction & Engineering
+AXISBANK,Axis Bank Ltd,NSE,AXISBANK,532215,INE238A01034,Banking,Private Bank
+KOTAKBANK,Kotak Mahindra Bank Ltd,NSE,KOTAKBANK,500247,INE237A01028,Banking,Private Bank
+HCLTECH,HCL Technologies Ltd,NSE,HCLTECH,532281,INE860A01027,IT,Software Services
+M&M,Mahindra & Mahindra Ltd,NSE,M&M,500520,INE101A01026,Automotive,Automobiles
+SUNPHARMA,Sun Pharmaceutical Industries Ltd,NSE,SUNPHARMA,524715,INE044A01036,Healthcare,Pharmaceuticals
+MARUTI,Maruti Suzuki India Ltd,NSE,MARUTI,532500,INE585B01010,Automotive,Automobiles
+NTPC,NTPC Ltd,NSE,NTPC,532555,INE733E01010,Energy,Power Generation
+TATAMOTORS,Tata Motors Ltd,NSE,TATAMOTORS,500570,INE155A01022,Automotive,Automobiles
+ONGC,Oil & Natural Gas Corporation Ltd,NSE,ONGC,500312,INE213A01029,Energy,Oil & Gas Exploration
+POWERGRID,Power Grid Corporation of India Ltd,NSE,POWERGRID,532898,INE752E01010,Energy,Power Transmission
+BAJFINANCE,Bajaj Finance Ltd,NSE,BAJFINANCE,500034,INE296A01024,Financial Services,NBFC
+TITAN,Titan Company Ltd,NSE,TITAN,500114,INE280A01028,Consumer Goods,Gems & Jewellery
+ULTRACEMCO,UltraTech Cement Ltd,NSE,ULTRACEMCO,532538,INE481G01011,Materials,Cement
+ADANIENT,Adani Enterprises Ltd,NSE,ADANIENT,512599,INE423A01024,Metals & Mining,Trading & Mining
+ADANIPORTS,Adani Ports & Special Economic Zone Ltd,NSE,ADANIPORTS,532921,INE742F01042,Infrastructure,Ports & Logistics
+COALINDIA,Coal India Ltd,NSE,COALINDIA,533278,INE522F01014,Metals & Mining,Mining
+WIPRO,Wipro Ltd,NSE,WIPRO,507685,INE075A01022,IT,Software Services
+ASIANPAINT,Asian Paints Ltd,NSE,ASIANPAINT,500820,INE021A01026,Consumer Goods,Paints
+NESTLEIND,Nestle India Ltd,NSE,NESTLEIND,500790,INE239A01024,FMCG,Food Processing
+JSWSTEEL,JSW Steel Ltd,NSE,JSWSTEEL,500228,INE019A01038,Metals & Mining,Steel
+TATASTEEL,Tata Steel Ltd,NSE,TATASTEEL,500470,INE081A01020,Metals & Mining,Steel
+GRASIM,Grasim Industries Ltd,NSE,GRASIM,500300,INE047A01021,Materials,Chemicals & Textiles
+TECHM,Tech Mahindra Ltd,NSE,TECHM,532755,INE669C01036,IT,Software Services
+HDFCLIFE,HDFC Life Insurance Company Ltd,NSE,HDFCLIFE,540777,INE795G01014,Financial Services,Life Insurance
+SBILIFE,SBI Life Insurance Company Ltd,NSE,SBILIFE,540719,INE123W01016,Financial Services,Life Insurance
+DRREDDY,Dr. Reddy's Laboratories Ltd,NSE,DRREDDY,500124,INE089A01023,Healthcare,Pharmaceuticals
+CIPLA,Cipla Ltd,NSE,CIPLA,500087,INE059A01026,Healthcare,Pharmaceuticals
+BRITANNIA,Britannia Industries Ltd,NSE,BRITANNIA,500825,INE216A01030,FMCG,Food Processing
+INDUSINDBK,IndusInd Bank Ltd,NSE,INDUSINDBK,532187,INE095A01012,Banking,Private Bank
+HINDALCO,Hindalco Industries Ltd,NSE,HINDALCO,500440,INE038A01020,Metals & Mining,Non-Ferrous Metals
+EICHERMOT,Eicher Motors Ltd,NSE,EICHERMOT,505200,INE066A01021,Automotive,Automobiles
+DIVISLAB,Divi's Laboratories Ltd,NSE,DIVISLAB,532488,INE361B01024,Healthcare,Pharmaceuticals
+BAJAJFINSV,Bajaj Finserv Ltd,NSE,BAJAJFINSV,532978,INE918I01026,Financial Services,Financial Holding
+BPCL,Bharat Petroleum Corporation Ltd,NSE,BPCL,500547,INE029A01011,Energy,Oil Refining
+HEROMOTOCO,Hero MotoCorp Ltd,NSE,HEROMOTOCO,500182,INE158A01026,Automotive,Automobiles
+TATACONSUM,Tata Consumer Products Ltd,NSE,TATACONSUM,500800,INE192A01025,FMCG,Consumer Goods
+APOLLOHOSP,Apollo Hospitals Enterprise Ltd,NSE,APOLLOHOSP,508869,INE437A01024,Healthcare,Hospitals
+BEL,Bharat Electronics Ltd,NSE,BEL,500049,INE263A01024,Capital Goods,Defense Electronics
+HAL,Hindustan Aeronautics Ltd,NSE,HAL,541154,INE066F01020,Capital Goods,Aerospace & Defense
+CDSL,Central Depository Services (India) Ltd,NSE,CDSL,540615,INE736A01011,Financial Services,Capital Markets
+CAMS,Computer Age Management Services Ltd,NSE,CAMS,543232,INE596I01012,Financial Services,Capital Markets
+COCHINSHIP,Cochin Shipyard Ltd,NSE,COCHINSHIP,540678,INE704P01017,Capital Goods,Shipbuilding
+IOC,Indian Oil Corporation Ltd,NSE,IOC,530965,INE242A01010,Energy,Oil Refining
+GAIL,GAIL (India) Ltd,NSE,GAIL,532155,INE129A01019,Energy,Gas Utility
+DLF,DLF Ltd,NSE,DLF,532868,INE271C01023,Real Estate,Real Estate Development
+ZOMATO,Zomato Ltd,NSE,ZOMATO,543320,INE758T01015,Consumer Services,E-Commerce & Food Delivery
+JIOFIN,Jio Financial Services Ltd,NSE,JIOFIN,543940,INE075001017,Financial Services,NBFC
+TRENT,Trent Ltd,NSE,TRENT,500251,INE849A01020,Consumer Services,Retail
+VBL,Varun Beverages Ltd,NSE,VBL,540180,INE200M01021,FMCG,Beverages
+SHREECEM,Shree Cement Ltd,NSE,SHREECEM,500387,INE070A01015,Materials,Cement
+BANKBARODA,Bank of Baroda,NSE,BANKBARODA,532134,INE028A01039,Banking,Public Bank
+PNB,Punjab National Bank,NSE,PNB,532461,INE160A01022,Banking,Public Bank
+LODHA,Macrotech Developers Ltd,NSE,LODHA,543287,INE670H01012,Real Estate,Real Estate Development
+PIDILITIND,Pidilite Industries Ltd,NSE,PIDILITIND,500331,INE318A01026,Materials,Chemicals
+SIEMENS,Siemens Ltd,NSE,SIEMENS,500550,INE003A01024,Capital Goods,Electrical Equipment
+ABB,ABB India Ltd,NSE,ABB,500002,INE117A01022,Capital Goods,Electrical Equipment
+BAJAJ-AUTO,Bajaj Auto Ltd,NSE,BAJAJ-AUTO,532977,INE917I01010,Automotive,Automobiles
+TATAPOWER,Tata Power Company Ltd,NSE,TATAPOWER,500400,INE245A01021,Energy,Power Generation
+INDIGO,InterGlobe Aviation Ltd,NSE,INDIGO,539448,INE646L01027,Consumer Services,Airlines
+POLYCAB,Polycab India Ltd,NSE,POLYCAB,542652,INE455K01017,Capital Goods,Cables & Wires
+TATAELXSI,Tata Elxsi Ltd,NSE,TATAELXSI,500408,INE670A01012,IT,Engineering Services
+PERSISTENT,Persistent Systems Ltd,NSE,PERSISTENT,533179,INE262H01013,IT,Software Services
+MUTHOOTFIN,Muthoot Finance Ltd,NSE,MUTHOOTFIN,533398,INE414G01012,Financial Services,Gold Loans
+CHOLAFIN,Cholamandalam Investment & Finance Co Ltd,NSE,CHOLAFIN,511243,INE121A01024,Financial Services,NBFC
+SRF,SRF Ltd,NSE,SRF,503806,INE647A01010,Materials,Chemicals
+PIIND,PI Industries Ltd,NSE,PIIND,523642,INE603J01030,Materials,Agro Chemicals
+MAXHEALTH,Max Healthcare Institute Ltd,NSE,MAXHEALTH,543220,INE026Q01016,Healthcare,Hospitals
+MANKIND,Mankind Pharma Ltd,NSE,MANKIND,543904,INE634S01028,Healthcare,Pharmaceuticals
+IRFC,Indian Railway Finance Corporation Ltd,NSE,IRFC,543257,INE053F01010,Financial Services,Railway Finance
+RECLTD,REC Ltd,NSE,RECLTD,532955,INE020B01018,Financial Services,Power Finance
+PFC,Power Finance Corporation Ltd,NSE,PFC,532810,INE134E01011,Financial Services,Power Finance
+IRCTC,Indian Railway Catering & Tourism Corp Ltd,NSE,IRCTC,542830,INE335Y01024,Consumer Services,Railway Tourism
+MAZDOCK,Mazagon Dock Shipbuilders Ltd,NSE,MAZDOCK,543237,INE249Z01012,Capital Goods,Defense Shipbuilding
+BDL,Bharat Dynamics Ltd,NSE,BDL,541143,INE171Z01018,Capital Goods,Defense Equipment
+NHPC,NHPC Ltd,NSE,NHPC,533098,INE848E01016,Energy,Hydro Power
+SJVN,SJVN Ltd,NSE,SJVN,533206,INE002L01015,Energy,Power Generation
+SOLARINDS,Solar Industries India Ltd,NSE,SOLARINDS,532725,INE343H01029,Materials,Explosives & Chemicals
+TIINDIA,Tube Investments of India Ltd,NSE,TIINDIA,540762,INE974X01010,Automotive,Auto Ancillaries
+CGPOWER,CG Power & Industrial Solutions Ltd,NSE,CGPOWER,500093,INE067A01029,Capital Goods,Electrical Equipment
+DIXON,Dixon Technologies (India) Ltd,NSE,DIXON,540699,INE935N01020,Consumer Goods,Electronics Manufacturing
+SUZLON,Suzlon Energy Ltd,NSE,SUZLON,532667,INE040H01021,Energy,Renewable Energy
+BHEL,Bharat Heavy Electricals Ltd,NSE,BHEL,500103,INE257A01026,Capital Goods,Power Equipment
+IDEA,Vodafone Idea Ltd,NSE,IDEA,532822,INE669E01016,Telecom,Telecommunication Services
+NYKAA,FSN E-Commerce Ventures Ltd,NSE,NYKAA,543384,INE388Y01029,Consumer Services,E-Commerce Retail
+POLICYBZR,PB Fintech Ltd,NSE,POLICYBZR,543390,INE417T01026,Financial Services,Fintech Insurance
+DELHIVERY,Delhivery Ltd,NSE,DELHIVERY,543529,INE148O01028,Services,Logistics
+AWL,Adani Wilmar Ltd,NSE,AWL,543458,INE699H01024,FMCG,Edible Oils & Foods
