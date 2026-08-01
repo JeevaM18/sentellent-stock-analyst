@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, List, Optional
-from sqlalchemy import String
+from sqlalchemy import String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -31,6 +31,25 @@ class Company(BaseModelMixin, Base):
         nullable=False,
     )
 
+    nse_symbol: Mapped[str | None] = mapped_column(
+        String(30),
+        unique=True,
+        nullable=True,
+    )
+
+    bse_symbol: Mapped[str | None] = mapped_column(
+        String(30),
+        unique=True,
+        nullable=True,
+    )
+
+    isin: Mapped[str | None] = mapped_column(
+        String(20),
+        unique=True,
+        nullable=True,
+        index=True,
+    )
+
     sector: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
@@ -40,6 +59,12 @@ class Company(BaseModelMixin, Base):
     industry: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
+    )
+
+    is_active: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=True,
     )
 
     # Relationships
