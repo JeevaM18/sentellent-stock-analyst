@@ -11,6 +11,7 @@ from app.models import (
     CompanyFundamentals,
     UserFollowedStock,
     KnowledgeDocument,
+    DocumentChunk,
     DocumentEmbedding,
     ChatSession,
     ChatMessage,
@@ -32,6 +33,7 @@ def test_models_and_relationships():
         "company_fundamentals",
         "user_followed_stocks",
         "knowledge_documents",
+        "document_chunks",
         "document_embeddings",
         "chat_sessions",
         "chat_messages",
@@ -51,12 +53,13 @@ def test_models_and_relationships():
     assert hasattr(Company, "followers")
 
     assert hasattr(KnowledgeDocument, "company")
-    assert hasattr(KnowledgeDocument, "embedding")
+    assert hasattr(KnowledgeDocument, "chunks")
+    assert hasattr(DocumentChunk, "embedding")
 
     assert hasattr(ChatSession, "user")
     assert hasattr(ChatSession, "messages")
 
-    print("\nSUCCESS: All 9 models and bidirectional ORM relationships configured cleanly!")
+    print("\nSUCCESS: All models and bidirectional ORM relationships configured cleanly!")
 
 
 if __name__ == "__main__":
