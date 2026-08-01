@@ -6,6 +6,7 @@ from app.agent.intent_keywords import (
     COMBINED_KEYWORDS,
     FUNDAMENTALS_KEYWORDS,
     MEMORY_KEYWORDS,
+    RECOMMENDATION_KEYWORDS,
     WATCHLIST_KEYWORDS,
 )
 
@@ -31,6 +32,7 @@ class AgentPlanner:
         q = question.lower().strip()
         tokens = [t for t in re.split(r'[\s,\.\?\!]+', q) if len(t) >= 2]
 
+        has_recommendation = any(kw in q for kw in RECOMMENDATION_KEYWORDS)
         has_memory = any(kw in q for kw in MEMORY_KEYWORDS)
         has_combined = any(kw in q for kw in COMBINED_KEYWORDS)
         has_fundamentals = any(kw in q for kw in FUNDAMENTALS_KEYWORDS)
@@ -46,7 +48,22 @@ class AgentPlanner:
 
         tools: list[ToolCall] = []
 
-        if has_memory:
+        if has_recommendation:
+            # Check for combined recommendation + sector/news
+            sector = None
+            if "banking" in q or "bank" in q:
+                sector = "Banking"
+            elif "it" in q or "tech" in q:
+                sector = "IT"
+
+            tools.append(ToolCall(name="recommendation", arguments={"query": question, "sector": sector, "top_k": 5}))
+
+            if "news" in q or "today" in q:
+                tools.append(ToolCall(name="retrieval", arguments={"query": question, "top_k": 3}))
+            elif has_fundamentals:
+                tools.append(ToolCall(name="fundamentals", arguments={"query": question, "ticker": potential_ticker}))
+
+        elif has_memory:
             action = "READ"
             if "forget" in q or "clear" in q or "delete" in q:
                 action = "DELETE"

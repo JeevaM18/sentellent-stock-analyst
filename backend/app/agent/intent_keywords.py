@@ -1,5 +1,20 @@
 """Keyword registries for intent classification."""
 
+RECOMMENDATION_KEYWORDS = [
+    "recommend",
+    "recommendations",
+    "best stock",
+    "best stocks",
+    "what should i buy",
+    "suggest companies",
+    "suggest stocks",
+    "top stocks",
+    "which stock",
+    "dividend stocks to buy",
+    "growth stocks to buy",
+    "value stocks to buy",
+]
+
 MEMORY_KEYWORDS = [
     "remember",
     "forget",
