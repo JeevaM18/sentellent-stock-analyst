@@ -7,6 +7,7 @@ from app.api.watchlist import router as watchlist_router
 from app.api.retrieval import retrieval_router
 from app.api.chat import chat_router
 from app.api.agent import agent_router
+from app.api.memory.router import router as memory_router
 
 app = FastAPI(
     title="Sentellent Stock Analyst API",
@@ -30,6 +31,7 @@ app.include_router(watchlist_router)
 app.include_router(retrieval_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
 app.include_router(agent_router, prefix="/api")
+app.include_router(memory_router, prefix="/api")
 
 
 @app.get("/")
