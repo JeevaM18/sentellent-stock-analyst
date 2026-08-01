@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, String, Text
+from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -43,12 +43,31 @@ class KnowledgeDocument(BaseModelMixin, Base):
         nullable=False,
     )
 
-    source_url: Mapped[str] = mapped_column(Text, nullable=False)
+    source_url: Mapped[str] = mapped_column(Text, nullable=False, index=True)
+
+    content_hash: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+        index=True,
+    )
+
+    status: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default="NEW",
+        index=True,
+    )
 
     published_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
         index=True,
+    )
+
+    ingested_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
     )
 
     # Relationships
@@ -63,3 +82,11 @@ class KnowledgeDocument(BaseModelMixin, Base):
         uselist=False,
         cascade="all, delete-orphan",
     )
+
+    @property
+    def article_url(self) -> str:
+        return self.source_url
+
+    @article_url.setter
+    def article_url(self, value: str) -> None:
+        self.source_url = value
