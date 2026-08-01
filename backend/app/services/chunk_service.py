@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 
 from app.constants.chunks import CHUNK_STATUS_NEW
 from app.models.document_chunk import DocumentChunk
+from app.models.knowledge_document import KnowledgeDocument
+from app.chunking.splitter import DocumentChunker
 
 
 class ChunkService:
@@ -64,7 +66,7 @@ class ChunkService:
 
     @staticmethod
     def replace_chunks(
-        db: Session, document_id: UUID, chunks_data: list[dict[str, Any]]
+        db: Session, *, document_id: UUID, chunks_data: list[dict[str, Any]]
     ) -> list[DocumentChunk]:
         """
         Atomically delete existing DocumentChunks for a document and insert new chunks.
@@ -100,6 +102,19 @@ class ChunkService:
         except Exception as e:
             db.rollback()
             raise e
+
+    @staticmethod
+    def chunk_document(
+        db: Session, *, document: KnowledgeDocument, strategy: str = "recursive"
+    ) -> list[DocumentChunk]:
+        """Split a KnowledgeDocument into semantic chunks and store in PostgreSQL atomically."""
+        chunker = DocumentChunker(strategy=strategy)
+        chunk_data_list = chunker.split_document(document)
+        raw_chunks = [c.to_dict() for c in chunk_data_list]
+
+        return ChunkService.replace_chunks(
+            db, document_id=document.id, chunks_data=raw_chunks
+        )
 
     @staticmethod
     def get_chunks_needing_embeddings(
