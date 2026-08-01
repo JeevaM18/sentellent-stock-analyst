@@ -1,35 +1,35 @@
-import re
 import logging
 import time
 from typing import Any
 from langchain_core.runnables import RunnableConfig
-from sqlalchemy.orm import Session, joinedload
 
+from app.agent.planner import AgentPlanner, ToolPlan
 from app.agent.prompts import AGENT_SYSTEM_PROMPT
-from app.agent.router import IntentRouter
 from app.agent.state import AgentState
 from app.llm.service import GenerationService
-from app.models.user_followed_stock import UserFollowedStock
-from app.rag.builder import ContextBuilder
 from app.rag.types import RAGContext
 from app.retrieval.service import RetrieverService
-from app.tools.fundamentals import FundamentalsTool
+from app.tools import default_tool_registry
+from app.tools.registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
 
 
-def router_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
+def planner_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
     """
-    Router node inspecting input question and classifying intent.
-    Sets intent and confidence in state metadata.
+    Planner node inspecting input question and creating ToolPlan specifying tool calls.
     """
+    start_time = time.perf_counter()
     question = state.get("question", "")
-    intent = IntentRouter.classify(question)
+    plan: ToolPlan = AgentPlanner.plan(question)
 
-    logger.info("Agent router classified question '%s' as intent: %s", question, intent.value)
+    duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+    logger.info("Agent planner generated plan with %d tools: %s", len(plan.tools), [t.name for t in plan.tools])
 
     metadata = dict(state.get("metadata", {}))
-    metadata["intent"] = intent.value
+    metadata["planner_time_ms"] = duration_ms
+    metadata["tool_plan"] = plan.model_dump()
+    metadata["intent"] = plan.tools[0].name if plan.tools else "retrieval"
     metadata["intent_confidence"] = 1.0
 
     return {
@@ -38,172 +38,68 @@ def router_node(state: AgentState, config: RunnableConfig | None = None) -> Agen
     }
 
 
-def route_decision(state: AgentState) -> str:
-    """Conditional router function determining target graph branch."""
-    question = state.get("question", "")
-    return IntentRouter.route(question)
-
-
-def retrieve_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
+def executor_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
     """
-    Node executing vector similarity retrieval over knowledge documents.
+    Executor node executing planned tool calls via dependency-injected ToolRegistry.
+    Aggregates tool results, citations, and combined formatted context.
     """
+    start_time = time.perf_counter()
+
     services = state.get("services", {})
     cfg = (config or {}).get("configurable", {}) if isinstance(config, dict) else {}
 
     db = services.get("db") or cfg.get("db")
-    retriever: RetrieverService = services.get("retriever") or cfg.get("retriever") or RetrieverService()
-
-    query = state.get("question", "")
-    start_time = time.perf_counter()
-
-    if db:
-        summary = retriever.retrieve(db=db, query=query)
-        rag_ctx = ContextBuilder.build(query=query, retrieval=summary, chat_history=state.get("chat_history", ""))
-        retrieved_text = rag_ctx.context
-        citations = [
-            {
-                "rank": chunk.rank,
-                "title": chunk.source_title,
-                "source_url": chunk.source_url,
-                "ticker": chunk.ticker,
-                "similarity": chunk.similarity,
-            }
-            for chunk in rag_ctx.chunks
-        ]
-        chunk_count = rag_ctx.chunk_count
-    else:
-        retrieved_text = ""
-        citations = []
-        chunk_count = 0
-
-    duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
-
-    tool_results = dict(state.get("tool_results", {}))
-    tool_results["retrieval"] = {
-        "status": "success",
-        "chunks_found": chunk_count,
-        "execution_ms": duration_ms,
-        "data": {"chunks_found": chunk_count},
-        "formatted_context": retrieved_text,
-    }
-
-    metadata = dict(state.get("metadata", {}))
-    metadata["retrieval_time_ms"] = duration_ms
-
-    tools_used = list(metadata.get("tools_used", []))
-    if "retrieval" not in tools_used:
-        tools_used.append("retrieval")
-    metadata["tools_used"] = tools_used
-
-    return {
-        **state,
-        "context": retrieved_text,
-        "retrieved_context": retrieved_text,
-        "citations": citations,
-        "tool_results": tool_results,
-        "metadata": metadata,
-    }
-
-
-def fundamentals_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
-    """
-    Node delegating execution to FundamentalsTool for DB lookup and financial reasoning.
-    """
-    services = state.get("services", {})
-    cfg = (config or {}).get("configurable", {}) if isinstance(config, dict) else {}
-    db: Session | None = services.get("db") or cfg.get("db")
-    tool_instance: FundamentalsTool = services.get("fundamentals_tool") or FundamentalsTool()
-
-    question = state.get("question", "")
-    res = tool_instance.run(db=db, query=question)
-
-    tool_results = dict(state.get("tool_results", {}))
-    tool_results["fundamentals"] = res
-
-    formatted_context = res.get("formatted_context", "")
-
-    metadata = dict(state.get("metadata", {}))
-    tools_used = list(metadata.get("tools_used", []))
-    if "fundamentals" not in tools_used:
-        tools_used.append("fundamentals")
-    metadata["tools_used"] = tools_used
-
-    return {
-        **state,
-        "context": formatted_context,
-        "retrieved_context": formatted_context,
-        "tool_results": tool_results,
-        "metadata": metadata,
-    }
-
-
-def watchlist_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
-    """
-    Node fetching user's followed watchlist stocks from PostgreSQL database.
-    """
-    services = state.get("services", {})
-    cfg = (config or {}).get("configurable", {}) if isinstance(config, dict) else {}
-    db: Session | None = services.get("db") or cfg.get("db")
     user_id = state.get("user_id")
-
-    start_time = time.perf_counter()
-    followed_companies = []
-
-    if db and user_id:
-        followed_rows = (
-            db.query(UserFollowedStock)
-            .options(joinedload(UserFollowedStock.company))
-            .filter(UserFollowedStock.user_id == user_id)
-            .all()
-        )
-        followed_companies = [r.company for r in followed_rows if getattr(r, "company", None)]
-
-    duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
-    tool_results = dict(state.get("tool_results", {}))
-
-    if followed_companies:
-        companies_data = [
-            {"ticker": str(getattr(c, "ticker", "")), "name": str(getattr(c, "company_name", "")), "sector": str(getattr(c, "sector", ""))}
-            for c in followed_companies
-        ]
-        formatted_lines = [
-            f"=== User Watchlist ({len(followed_companies)} stocks) ===",
-        ]
-        for c in followed_companies:
-            name = getattr(c, "company_name", "")
-            ticker = getattr(c, "ticker", "")
-            sector = getattr(c, "sector", "N/A")
-            formatted_lines.append(f"- {name} ({ticker}) [{sector or 'N/A'}]")
-
-        formatted_context = "\n".join(formatted_lines)
-        tool_results["watchlist"] = {
-            "status": "success",
-            "count": len(followed_companies),
-            "execution_ms": duration_ms,
-            "data": {"count": len(followed_companies), "companies": companies_data},
-            "formatted_context": formatted_context,
-        }
-    else:
-        formatted_context = "Your watchlist currently contains no followed stocks."
-        tool_results["watchlist"] = {
-            "status": "empty",
-            "count": 0,
-            "execution_ms": duration_ms,
-            "data": {"count": 0, "companies": []},
-            "formatted_context": formatted_context,
-        }
+    retriever: RetrieverService = services.get("retriever") or cfg.get("retriever")
+    registry: ToolRegistry = services.get("registry") or cfg.get("registry") or default_tool_registry
 
     metadata = dict(state.get("metadata", {}))
+    plan_dict = metadata.get("tool_plan", {})
+    plan = ToolPlan.model_validate(plan_dict) if plan_dict else AgentPlanner.plan(state.get("question", ""))
+
+    tool_results = dict(state.get("tool_results", {}))
+    combined_contexts = []
+    all_citations = list(state.get("citations", []))
     tools_used = list(metadata.get("tools_used", []))
-    if "watchlist" not in tools_used:
-        tools_used.append("watchlist")
+
+    for tool_call in plan.tools:
+        tool_name = tool_call.name
+        kwargs = dict(tool_call.arguments)
+
+        # Inject runtime dependencies
+        kwargs["db"] = db
+        kwargs["user_id"] = user_id
+        kwargs["retriever"] = retriever
+        kwargs["chat_history"] = state.get("chat_history", "")
+        if "query" not in kwargs or not kwargs["query"]:
+            kwargs["query"] = state.get("question", "")
+
+        logger.info("Executor invoking tool '%s' with args %s", tool_name, kwargs)
+        res = registry.execute(tool_name, **kwargs)
+
+        tool_results[tool_name] = res
+        if tool_name not in tools_used:
+            tools_used.append(tool_name)
+
+        if res.get("formatted_context"):
+            combined_contexts.append(res["formatted_context"])
+
+        if res.get("citations"):
+            for c in res["citations"]:
+                if c not in all_citations:
+                    all_citations.append(c)
+
+    duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+    merged_context = "\n\n".join(combined_contexts) if combined_contexts else "No additional tool context available."
+
+    metadata["tool_execution_ms"] = duration_ms
     metadata["tools_used"] = tools_used
 
     return {
         **state,
-        "context": formatted_context,
-        "retrieved_context": formatted_context,
+        "context": merged_context,
+        "retrieved_context": merged_context,
+        "citations": all_citations,
         "tool_results": tool_results,
         "metadata": metadata,
     }
@@ -240,5 +136,60 @@ def generate_node(state: AgentState, config: RunnableConfig | None = None) -> Ag
     return {
         **state,
         "final_answer": llm_resp.answer,
+        "metadata": metadata,
+    }
+
+
+def explainability_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
+    """
+    Node computing empirical confidence score, explainability reasoning trace,
+    and latency breakdown metadata.
+    """
+    citations = state.get("citations", [])
+    tool_results = state.get("tool_results", {})
+    metadata = dict(state.get("metadata", {}))
+    tools_used = metadata.get("tools_used", [])
+
+    # 1. Empirical Rule-Based Confidence Calculation
+    confidence = 0.50  # Base confidence
+    if citations:
+        max_sim = max((c.get("similarity", 0.0) for c in citations), default=0.0)
+        if max_sim >= 0.70:
+            confidence += 0.25
+        elif max_sim >= 0.40:
+            confidence += 0.15
+
+    successful_tools = [t for t, res in tool_results.items() if res.get("status") == "success"]
+    if successful_tools:
+        confidence += 0.15
+
+    if state.get("context") and "No additional tool context" not in state["context"]:
+        confidence += 0.05
+
+    confidence = round(min(confidence, 0.95), 2)
+
+    # 2. Reasoning Trace Generation
+    reasoning = [
+        f"Planner formulated execution plan with tools: {', '.join(tools_used)}",
+    ]
+    for tool_name, res in tool_results.items():
+        st = res.get("status", "unknown")
+        exec_ms = res.get("execution_ms", 0.0)
+        reasoning.append(f"Executed tool '{tool_name}' (status: {st}, latency: {exec_ms:.2f} ms)")
+
+    if citations:
+        reasoning.append(f"Retrieved {len(citations)} supporting knowledge document chunks")
+
+    planner_ms = metadata.get("planner_time_ms", 0.0)
+    tool_ms = metadata.get("tool_execution_ms", 0.0)
+    gen_ms = metadata.get("generation_time_ms", 0.0)
+    total_ms = round(planner_ms + tool_ms + gen_ms, 2)
+
+    metadata["execution_time_ms"] = total_ms
+    metadata["confidence"] = confidence
+    metadata["reasoning"] = reasoning
+
+    return {
+        **state,
         "metadata": metadata,
     }
