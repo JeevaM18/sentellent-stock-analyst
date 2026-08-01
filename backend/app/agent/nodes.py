@@ -6,14 +6,14 @@ from langchain_core.runnables import RunnableConfig
 from sqlalchemy.orm import Session, joinedload
 
 from app.agent.prompts import AGENT_SYSTEM_PROMPT
-from app.agent.router import IntentRouter, IntentType
+from app.agent.router import IntentRouter
 from app.agent.state import AgentState
 from app.llm.service import GenerationService
-from app.models.company import Company
 from app.models.user_followed_stock import UserFollowedStock
 from app.rag.builder import ContextBuilder
 from app.rag.types import RAGContext
 from app.retrieval.service import RetrieverService
+from app.tools.fundamentals import FundamentalsTool
 
 logger = logging.getLogger(__name__)
 
@@ -108,95 +108,20 @@ def retrieve_node(state: AgentState, config: RunnableConfig | None = None) -> Ag
 
 def fundamentals_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
     """
-    Node fetching company fundamentals metrics directly from PostgreSQL database.
+    Node delegating execution to FundamentalsTool for DB lookup and financial reasoning.
     """
     services = state.get("services", {})
     cfg = (config or {}).get("configurable", {}) if isinstance(config, dict) else {}
     db: Session | None = services.get("db") or cfg.get("db")
+    tool_instance: FundamentalsTool = services.get("fundamentals_tool") or FundamentalsTool()
 
     question = state.get("question", "")
-    start_time = time.perf_counter()
+    res = tool_instance.run(db=db, query=question)
 
-    found_company: Company | None = None
-    if db:
-        tokens = [t for t in re.split(r'[\s,\.\?\!]+', question) if len(t) >= 2]
-        for token in tokens:
-            comp = (
-                db.query(Company)
-                .options(joinedload(Company.fundamentals))
-                .filter(
-                    (Company.ticker.ilike(token))
-                    | (Company.company_name.ilike(f"%{token}%"))
-                )
-                .first()
-            )
-            if comp:
-                found_company = comp
-                break
-
-    duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
     tool_results = dict(state.get("tool_results", {}))
+    tool_results["fundamentals"] = res
 
-    if found_company:
-        f = getattr(found_company, "fundamentals", None)
-        
-        # Safely extract numeric fields avoiding MagicMock formatting issues
-        cp = float(f.current_price) if f and getattr(f, "current_price", None) and isinstance(f.current_price, (int, float, str)) and not isinstance(f.current_price, type) else None
-        mcap = f.market_cap if f and getattr(f, "market_cap", None) else None
-        pe = float(f.pe_ratio) if f and getattr(f, "pe_ratio", None) and isinstance(f.pe_ratio, (int, float, str)) else None
-        eps_val = float(f.eps) if f and getattr(f, "eps", None) and isinstance(f.eps, (int, float, str)) else None
-        roe_val = float(f.roe) if f and getattr(f, "roe", None) and isinstance(f.roe, (int, float, str)) else None
-        dte = float(f.debt_to_equity) if f and getattr(f, "debt_to_equity", None) and isinstance(f.debt_to_equity, (int, float, str)) else None
-        div = float(f.dividend_yield) if f and getattr(f, "dividend_yield", None) and isinstance(f.dividend_yield, (int, float, str)) else None
-        high = float(f.fifty_two_week_high) if f and getattr(f, "fifty_two_week_high", None) and isinstance(f.fifty_two_week_high, (int, float, str)) else None
-        low = float(f.fifty_two_week_low) if f and getattr(f, "fifty_two_week_low", None) and isinstance(f.fifty_two_week_low, (int, float, str)) else None
-
-        data = {
-            "company_name": str(getattr(found_company, "company_name", "N/A")),
-            "ticker": str(getattr(found_company, "ticker", "N/A")),
-            "exchange": str(getattr(found_company, "exchange", "NSE")),
-            "current_price": cp,
-            "market_cap": mcap,
-            "pe_ratio": pe,
-            "eps": eps_val,
-            "roe": roe_val,
-            "debt_to_equity": dte,
-            "dividend_yield": div,
-            "fifty_two_week_high": high,
-            "fifty_two_week_low": low,
-        }
-
-        mcap_formatted = f"₹{mcap:,}" if isinstance(mcap, (int, float)) else f"₹{mcap}" if mcap is not None else "N/A"
-
-        formatted_lines = [
-            f"=== Company Fundamentals: {data['company_name']} ({data['ticker']}) ===",
-            f"Current Price: ₹{cp}" if cp is not None else "Current Price: N/A",
-            f"PE Ratio: {pe}" if pe is not None else "PE Ratio: N/A",
-            f"EPS: ₹{eps_val}" if eps_val is not None else "EPS: N/A",
-            f"ROE: {roe_val}%" if roe_val is not None else "ROE: N/A",
-            f"Dividend Yield: {div}%" if div is not None else "Dividend Yield: N/A",
-            f"Market Cap: {mcap_formatted}",
-            f"52-Week High: ₹{high}" if high is not None else "52-Week High: N/A",
-            f"52-Week Low: ₹{low}" if low is not None else "52-Week Low: N/A",
-        ]
-        formatted_context = "\n".join(formatted_lines)
-
-        tool_results["fundamentals"] = {
-            "status": "success",
-            "company": data['company_name'],
-            "execution_ms": duration_ms,
-            "data": data,
-            "formatted_context": formatted_context,
-        }
-    else:
-        formatted_context = "No specific company fundamental metrics found in database for this question."
-        tool_results["fundamentals"] = {
-            "status": "not_found",
-            "company": None,
-            "execution_ms": duration_ms,
-            "data": {},
-            "formatted_context": formatted_context,
-        }
+    formatted_context = res.get("formatted_context", "")
 
     metadata = dict(state.get("metadata", {}))
     tools_used = list(metadata.get("tools_used", []))
