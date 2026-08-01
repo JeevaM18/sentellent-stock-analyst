@@ -1,0 +1,8 @@
+"""Constants for vector embedding model generation and batching."""
+
+EMBEDDING_MODEL = "text-embedding-004"
+EMBEDDING_DIMENSIONS = 768
+EMBEDDING_BATCH_SIZE = 100
+EMBEDDING_MAX_RETRIES = 3
+EMBEDDING_RETRY_DELAY_SECONDS = 2
+DEFAULT_EMBEDDING_PROVIDER = "google"
