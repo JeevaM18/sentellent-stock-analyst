@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.session import test_db_connection
 from app.api.auth import router as auth_router
 from app.api.company import router as company_router
+from app.api.watchlist import router as watchlist_router
 
 app = FastAPI(
     title="Sentellent Stock Analyst API",
@@ -22,6 +23,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth_router)
 app.include_router(company_router)
+app.include_router(watchlist_router)
 
 
 @app.get("/")
