@@ -17,6 +17,16 @@ class CompanyService:
         return db.query(Company).filter(Company.ticker == ticker.upper()).first()
 
     @staticmethod
+    def get_active_companies(db: Session) -> list[Company]:
+        """Retrieve list of active listed companies ordered by ticker."""
+        return (
+            db.query(Company)
+            .filter(Company.is_active.is_(True))
+            .order_by(Company.ticker)
+            .all()
+        )
+
+    @staticmethod
     def search_companies(
         db: Session,
         search: str | None = None,
