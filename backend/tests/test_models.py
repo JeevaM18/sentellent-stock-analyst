@@ -13,7 +13,7 @@ from app.models import (
     KnowledgeDocument,
     DocumentChunk,
     DocumentEmbedding,
-    ChatSession,
+    ChatConversation,
     ChatMessage,
     InvestorMemory,
     DocumentType,
@@ -35,7 +35,7 @@ def test_models_and_relationships():
         "knowledge_documents",
         "document_chunks",
         "document_embeddings",
-        "chat_sessions",
+        "chat_conversations",
         "chat_messages",
         "investor_memory",
     ]
@@ -45,7 +45,7 @@ def test_models_and_relationships():
 
     # Verify ORM Relationship mapper attributes
     assert hasattr(User, "followed_stocks")
-    assert hasattr(User, "chat_sessions")
+    assert hasattr(User, "chat_conversations")
     assert hasattr(User, "investor_memory")
 
     assert hasattr(Company, "fundamentals")
@@ -56,8 +56,7 @@ def test_models_and_relationships():
     assert hasattr(KnowledgeDocument, "chunks")
     assert hasattr(DocumentChunk, "embedding")
 
-    assert hasattr(ChatSession, "user")
-    assert hasattr(ChatSession, "messages")
+    assert hasattr(ChatConversation, "messages")
 
     print("\nSUCCESS: All models and bidirectional ORM relationships configured cleanly!")
 

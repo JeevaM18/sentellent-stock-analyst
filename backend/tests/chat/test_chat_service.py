@@ -40,7 +40,7 @@ def test_chat_without_results(db):
     )
 
     req = ChatRequest(query="Random query")
-    res = ChatService.ask(db=db, request=req, retriever_service=mock_retriever, generation_service=mock_gen)
+    res = ChatService.ask(db=db, request=req, user_id=None, retriever_service=mock_retriever, generation_service=mock_gen)
 
     assert isinstance(res, ChatResponse)
     assert "I couldn't find enough evidence" in res.answer
@@ -79,7 +79,7 @@ def test_chat_service_ask(db):
     )
 
     req = ChatRequest(query="Reliance earnings", ticker="RELIANCE")
-    res = ChatService.ask(db=db, request=req, retriever_service=mock_retriever, generation_service=mock_gen)
+    res = ChatService.ask(db=db, request=req, user_id=None, retriever_service=mock_retriever, generation_service=mock_gen)
 
     assert res.answer == "Reliance Industries reported higher revenue in Q1."
     assert res.chunks_used == 1
