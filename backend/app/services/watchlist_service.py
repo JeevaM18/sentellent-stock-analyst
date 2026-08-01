@@ -112,10 +112,21 @@ class WatchlistService:
 
     @staticmethod
     def get_followed_company_ids(db: Session, user_id: UUID) -> list[UUID]:
-        """Return list of company UUIDs followed by the user (ready for Phase 5 news ingestion)."""
+        """Return list of company UUIDs followed by the user."""
         records = (
             db.query(UserFollowedStock.company_id)
             .filter(UserFollowedStock.user_id == user_id)
             .all()
         )
         return [r[0] for r in records]
+
+    @staticmethod
+    def get_followed_companies(db: Session, user_id: UUID) -> list[Company]:
+        """Return list of Company models followed by the user."""
+        return (
+            db.query(Company)
+            .join(UserFollowedStock, Company.id == UserFollowedStock.company_id)
+            .filter(UserFollowedStock.user_id == user_id)
+            .order_by(Company.ticker)
+            .all()
+        )

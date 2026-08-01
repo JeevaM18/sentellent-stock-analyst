@@ -25,8 +25,8 @@ class BaseNewsProvider(ABC):
     """Abstract base class for news providers."""
 
     @abstractmethod
-    def fetch(self, company_name: str, ticker: str) -> dict[str, Any]:
-        """Fetch news articles for a specific company."""
+    def fetch(self, company_or_name: Any, ticker: str | None = None) -> dict[str, Any]:
+        """Fetch news articles for a specific company or company_name + ticker pair."""
         pass
 
 
@@ -36,9 +36,16 @@ class GoogleNewsRSSProvider(BaseNewsProvider):
     normalizes URLs, generates content hashes, and sorts articles newest-first.
     """
 
-    def fetch(self, company_name: str, ticker: str) -> dict[str, Any]:
-        query = f"{company_name} OR {ticker}"
-        clean_ticker = ticker.strip().upper()
+    def fetch(self, company_or_name: Any, ticker: str | None = None) -> dict[str, Any]:
+        # Support passing a Company object or separate company_name + ticker strings
+        if hasattr(company_or_name, "company_name") and hasattr(company_or_name, "ticker"):
+            company_name = company_or_name.company_name
+            clean_ticker = company_or_name.ticker.strip().upper()
+        else:
+            company_name = str(company_or_name)
+            clean_ticker = str(ticker).strip().upper() if ticker else ""
+
+        query = f"{company_name} OR {clean_ticker}"
 
         try:
             response = requests.get(
@@ -82,7 +89,7 @@ class GoogleNewsRSSProvider(BaseNewsProvider):
                     }
                 )
 
-            # Sort articles newest first (articles with datetime > None)
+            # Sort articles newest first
             articles.sort(
                 key=lambda x: x["published_at"] if x["published_at"] else datetime.min.replace(tzinfo=timezone.utc),
                 reverse=True,
