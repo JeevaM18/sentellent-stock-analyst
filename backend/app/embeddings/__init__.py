@@ -1,6 +1,8 @@
 from .constants import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, DEFAULT_EMBEDDING_PROVIDER
 from .types import EmbeddingResult
+from .exceptions import EmbeddingProviderError
 from .provider import BaseEmbeddingProvider
+from .google_provider import GoogleEmbeddingProvider
 from .utils import (
     validate_dimension,
     validate_batch,
@@ -15,7 +17,9 @@ __all__ = [
     "EMBEDDING_MODEL",
     "DEFAULT_EMBEDDING_PROVIDER",
     "EmbeddingResult",
+    "EmbeddingProviderError",
     "BaseEmbeddingProvider",
+    "GoogleEmbeddingProvider",
     "validate_dimension",
     "validate_batch",
     "vector_norm",

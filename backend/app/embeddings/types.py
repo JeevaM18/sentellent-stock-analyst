@@ -1,7 +1,12 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Any
 
 from app.embeddings.constants import DEFAULT_EMBEDDING_PROVIDER, EMBEDDING_DIMENSIONS, EMBEDDING_MODEL
+
+
+def current_utc() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 @dataclass(slots=True)
@@ -13,3 +18,4 @@ class EmbeddingResult:
     provider: str = DEFAULT_EMBEDDING_PROVIDER
     text: str | None = None
     metadata: dict[str, Any] | None = None
+    created_at: datetime = field(default_factory=current_utc)
