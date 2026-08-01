@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
@@ -10,6 +10,7 @@ from app.models.mixins import BaseModelMixin
 
 if TYPE_CHECKING:
     from app.models.knowledge_document import KnowledgeDocument
+    from app.models.document_embedding import DocumentEmbedding
 
 
 class DocumentChunk(BaseModelMixin, Base):
@@ -78,4 +79,11 @@ class DocumentChunk(BaseModelMixin, Base):
     document: Mapped["KnowledgeDocument"] = relationship(
         "KnowledgeDocument",
         back_populates="chunks",
+    )
+
+    embedding: Mapped[Optional["DocumentEmbedding"]] = relationship(
+        "DocumentEmbedding",
+        back_populates="chunk",
+        uselist=False,
+        cascade="all, delete-orphan",
     )

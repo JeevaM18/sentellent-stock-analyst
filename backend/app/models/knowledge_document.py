@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
@@ -12,7 +12,6 @@ from app.models.enums import DocumentType
 
 if TYPE_CHECKING:
     from app.models.company import Company
-    from app.models.document_embedding import DocumentEmbedding
     from app.models.document_chunk import DocumentChunk
 
 
@@ -80,13 +79,6 @@ class KnowledgeDocument(BaseModelMixin, Base):
     chunks: Mapped[list["DocumentChunk"]] = relationship(
         "DocumentChunk",
         back_populates="document",
-        cascade="all, delete-orphan",
-    )
-
-    embedding: Mapped[Optional["DocumentEmbedding"]] = relationship(
-        "DocumentEmbedding",
-        back_populates="document",
-        uselist=False,
         cascade="all, delete-orphan",
     )
 
