@@ -24,3 +24,19 @@ def get_current_user(
     # Automatically synchronize user in PostgreSQL database on every authenticated API call
     user, _ = AuthService.sync_user(db, claims)
     return user
+
+
+def get_optional_current_user(
+    authorization: str | None = Header(None),
+    db: Session = Depends(get_db),
+) -> User | None:
+    """Optional dependency returning User model if Bearer token present, or None if unauthenticated."""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    try:
+        token = authorization.split(" ")[1]
+        claims = GoogleAuthService.get_google_user_claims(token)
+        user, _ = AuthService.sync_user(db, claims)
+        return user
+    except Exception:
+        return None
