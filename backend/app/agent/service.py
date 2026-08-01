@@ -12,6 +12,8 @@ from app.constants.chat import ROLE_ASSISTANT, ROLE_USER
 from app.llm.service import GenerationService
 from app.retrieval.service import RetrieverService
 from app.services.conversation_service import ConversationService
+from app.tools import default_tool_registry
+from app.tools.registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,7 @@ class AgentService:
         conversation_id: UUID | None = None,
         retriever_service: RetrieverService | None = None,
         generation_service: GenerationService | None = None,
+        tool_registry: ToolRegistry | None = None,
     ) -> dict[str, Any]:
         """
         Execute end-to-end agentic workflow over LangGraph graph and return state execution payload.
@@ -60,6 +63,7 @@ class AgentService:
         # Step 4: Prepare initial AgentState with services mapping for reliable node access
         retriever = retriever_service or RetrieverService()
         gen_service = generation_service or GenerationService()
+        registry = tool_registry or default_tool_registry
 
         initial_state: AgentState = {
             "user_id": user_id,
@@ -80,6 +84,7 @@ class AgentService:
                 "db": db,
                 "retriever": retriever,
                 "generation_service": gen_service,
+                "registry": registry,
             },
         }
 
@@ -89,6 +94,7 @@ class AgentService:
                 "db": db,
                 "retriever": retriever,
                 "generation_service": gen_service,
+                "registry": registry,
             }
         }
 
@@ -96,7 +102,9 @@ class AgentService:
 
         total_time_ms = round((time.perf_counter() - start_total) * 1000, 2)
         metadata = dict(final_state.get("metadata", {}))
-        metadata["execution_time_ms"] = total_time_ms
+        metadata["total_latency_ms"] = total_time_ms
+        if "execution_time_ms" not in metadata or metadata["execution_time_ms"] == 0.0:
+            metadata["execution_time_ms"] = total_time_ms
         final_state["metadata"] = metadata
 
         # Step 6: Save ASSISTANT message to database

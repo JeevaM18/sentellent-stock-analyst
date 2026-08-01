@@ -26,7 +26,7 @@ def post_agent_chat(
     current_user: User | None = Depends(get_optional_current_user),
 ):
     """
-    Agentic AI chat endpoint executing LangGraph StateGraph workflow with tool selection & memory.
+    Agentic AI chat endpoint executing LangGraph StateGraph workflow with multi-tool planner & memory.
     """
     try:
         user_id = current_user.id if current_user else None
@@ -42,11 +42,13 @@ def post_agent_chat(
             answer=result_state.get("final_answer", ""),
             conversation_id=result_state["conversation_id"],
             intent=metadata.get("intent", "retrieval"),
-            execution_time_ms=metadata.get("execution_time_ms", 0.0),
-            agent_version=metadata.get("agent_version", "v1"),
+            confidence=metadata.get("confidence", 0.85),
+            reasoning=metadata.get("reasoning", []),
             tools_used=metadata.get("tools_used", []),
             tool_results=result_state.get("tool_results", {}),
             citations=result_state.get("citations", []),
+            execution_time_ms=metadata.get("execution_time_ms", 0.0),
+            metadata=metadata,
         )
     except HTTPException:
         raise
