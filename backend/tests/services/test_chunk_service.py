@@ -126,7 +126,7 @@ def test_replace_chunks(db, sample_document):
         {"chunk_index": 0, "content": "Old C0", "chunk_hash": "h0", "token_count": 2, "character_count": 6},
         {"chunk_index": 1, "content": "Old C1", "chunk_hash": "h1", "token_count": 2, "character_count": 6},
     ]
-    ChunkService.replace_chunks(db, sample_document.id, initial)
+    ChunkService.replace_chunks(db, document_id=sample_document.id, chunks_data=initial)
     assert len(ChunkService.get_chunks(db, sample_document.id)) == 2
 
     # Replace with 3 new chunks
@@ -135,7 +135,7 @@ def test_replace_chunks(db, sample_document):
         {"chunk_index": 1, "content": "New C1", "chunk_hash": "nh1", "token_count": 3, "character_count": 6},
         {"chunk_index": 2, "content": "New C2", "chunk_hash": "nh2", "token_count": 3, "character_count": 6},
     ]
-    new_chunks = ChunkService.replace_chunks(db, sample_document.id, replacement)
+    new_chunks = ChunkService.replace_chunks(db, document_id=sample_document.id, chunks_data=replacement)
     assert len(new_chunks) == 3
 
     fetched = ChunkService.get_chunks(db, sample_document.id)

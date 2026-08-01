@@ -17,7 +17,7 @@ class DummyCompany:
 
 
 @patch("app.ingestion.news.pipeline.GoogleNewsRSSProvider")
-@patch("app.ingestion.news.pipeline.NewsService")
+@patch("app.services.news_service.NewsService")
 def test_pipeline_company_success(mock_service, mock_provider_cls):
     mock_provider_instance = MagicMock()
     mock_provider_cls.return_value = mock_provider_instance
@@ -81,7 +81,7 @@ def test_empty_feed_skipped(mock_provider_cls):
 
 @patch("app.ingestion.news.pipeline.WatchlistService")
 @patch("app.ingestion.news.pipeline.GoogleNewsRSSProvider")
-@patch("app.ingestion.news.pipeline.NewsService")
+@patch("app.services.news_service.NewsService")
 def test_ingest_watchlist(mock_news_service, mock_provider_cls, mock_watchlist_service):
     c1 = DummyCompany("Reliance Industries", "RELIANCE", "1")
     c2 = DummyCompany("Infosys", "INFY", "2")
@@ -104,7 +104,7 @@ def test_ingest_watchlist(mock_news_service, mock_provider_cls, mock_watchlist_s
 
 
 @patch("app.ingestion.news.pipeline.GoogleNewsRSSProvider")
-@patch("app.ingestion.news.pipeline.NewsService")
+@patch("app.services.news_service.NewsService")
 def test_mixed_pipeline_execution(mock_news_service, mock_provider_cls):
     cA = DummyCompany("Company A", "COMPA", "1")
     cB = DummyCompany("Company B", "COMPB", "2")

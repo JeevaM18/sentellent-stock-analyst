@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 
 from app.models.company import Company
 from app.services.company_service import CompanyService
-from app.services.news_service import NewsService
 from app.services.watchlist_service import WatchlistService
 from app.ingestion.news.provider import GoogleNewsRSSProvider
 
@@ -46,6 +45,8 @@ class NewsPipeline:
         company: Company,
     ) -> CompanyIngestionResult:
         """Fetch and ingest news articles for a single company."""
+        from app.services.news_service import NewsService
+
         provider = GoogleNewsRSSProvider()
         payload = provider.fetch(company)
 
