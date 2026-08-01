@@ -1,41 +1,35 @@
-import uuid
-from typing import TYPE_CHECKING
-
-from sqlalchemy import Enum as SQLEnum, ForeignKey, Text
+from datetime import datetime, timezone
+from uuid import uuid4
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
-from app.models.mixins import BaseModelMixin
-from app.models.enums import ChatRole
-
-if TYPE_CHECKING:
-    from app.models.chat_session import ChatSession
 
 
-class ChatMessage(BaseModelMixin, Base):
+class ChatMessage(Base):
+    """SQLAlchemy model representing an individual message in a chat conversation."""
+
     __tablename__ = "chat_messages"
 
-    session_id: Mapped[uuid.UUID] = mapped_column(
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    conversation_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("chat_sessions.id"),
+        ForeignKey("chat_conversations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
+    role = Column(String(20), nullable=False)
+    content = Column(Text, nullable=False)
+    token_count = Column(Integer, nullable=True)
+    prompt_tokens = Column(Integer, nullable=True)
+    completion_tokens = Column(Integer, nullable=True)
 
-    role: Mapped[ChatRole] = mapped_column(
-        SQLEnum(ChatRole, native_enum=False),
+    created_at = Column(
+        DateTime(timezone=True),
         nullable=False,
-        default=ChatRole.USER,
+        default=lambda: datetime.now(timezone.utc),
     )
 
-    content: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
-
-    # Relationship
-    session: Mapped["ChatSession"] = relationship(
-        "ChatSession",
-        back_populates="messages",
-    )
+    # Relationships
+    conversation = relationship("ChatConversation", back_populates="messages")

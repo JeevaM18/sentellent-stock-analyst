@@ -7,7 +7,7 @@ from app.models.mixins import BaseModelMixin
 
 if TYPE_CHECKING:
     from app.models.user_followed_stock import UserFollowedStock
-    from app.models.chat_session import ChatSession
+    from app.models.chat_conversation import ChatConversation
     from app.models.investor_memory import InvestorMemory
 
 
@@ -45,9 +45,8 @@ class User(BaseModelMixin, Base):
         cascade="all, delete-orphan",
     )
 
-    chat_sessions: Mapped[List["ChatSession"]] = relationship(
-        "ChatSession",
-        back_populates="user",
+    chat_conversations: Mapped[List["ChatConversation"]] = relationship(
+        "ChatConversation",
         cascade="all, delete-orphan",
     )
 
