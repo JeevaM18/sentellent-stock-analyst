@@ -49,11 +49,12 @@ class ContextBuilder:
         *,
         query: str,
         retrieval: RetrievalSummary,
+        chat_history: str = "",
         prompt_version: str = DEFAULT_PROMPT_VERSION,
         max_characters: int = MAX_CONTEXT_CHARACTERS,
     ) -> RAGContext:
         """
-        Transform RetrievalSummary results into a RAGContext object.
+        Transform RetrievalSummary results and prior chat_history into a RAGContext object.
         Applies chunk deduplication, structured block formatting, and a strict character limit guard.
         """
         system_prompt = get_system_prompt(prompt_version)
@@ -62,6 +63,7 @@ class ContextBuilder:
                 question=query,
                 system_prompt=system_prompt,
                 context="",
+                chat_history=chat_history,
                 chunks=[],
                 chunk_count=0,
                 total_characters=0,
@@ -142,6 +144,7 @@ class ContextBuilder:
             question=query,
             system_prompt=system_prompt,
             context=rendered_context,
+            chat_history=chat_history,
             chunks=structured_chunks,
             chunk_count=len(structured_chunks),
             total_characters=total_chars,

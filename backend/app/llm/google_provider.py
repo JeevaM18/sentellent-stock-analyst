@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class GoogleLLMProvider(BaseLLMProvider):
-    """Google Gemini LLM provider for RAG answer generation using gemini-2.5-flash."""
+    """Google Gemini LLM provider for RAG answer generation using gemini-flash-latest."""
 
     def __init__(self, api_key: str | None = None, model: str = DEFAULT_MODEL):
         key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
@@ -35,19 +35,25 @@ class GoogleLLMProvider(BaseLLMProvider):
         start_time = time.perf_counter()
 
         context_body = rag_context.context.strip() if rag_context.context and rag_context.context.strip() else "No context available."
+        history_body = rag_context.chat_history.strip() if rag_context.chat_history and rag_context.chat_history.strip() else "No prior conversation history."
+
         prompt = (
-            "====================\n"
+            "=========================\n"
             "SYSTEM\n"
-            "====================\n"
+            "=========================\n"
             f"{rag_context.system_prompt}\n\n"
-            "====================\n"
-            "QUESTION\n"
-            "====================\n"
-            f"{rag_context.question}\n\n"
-            "====================\n"
-            "CONTEXT\n"
-            "====================\n"
-            f"{context_body}"
+            "=========================\n"
+            "CHAT HISTORY\n"
+            "=========================\n"
+            f"{history_body}\n\n"
+            "=========================\n"
+            "RETRIEVED CONTEXT\n"
+            "=========================\n"
+            f"{context_body}\n\n"
+            "=========================\n"
+            "CURRENT QUESTION\n"
+            "=========================\n"
+            f"{rag_context.question}"
         )
 
         try:

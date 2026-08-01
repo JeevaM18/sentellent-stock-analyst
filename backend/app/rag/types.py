@@ -24,6 +24,7 @@ class RAGContext:
     question: str
     system_prompt: str
     context: str
+    chat_history: str = ""
     chunks: list[ContextChunk] = field(default_factory=list)
     chunk_count: int = 0
     total_characters: int = 0
