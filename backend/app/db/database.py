@@ -11,6 +11,10 @@ DATABASE_URL = os.getenv(
 if DATABASE_URL and DATABASE_URL.startswith("postgresql://") and not DATABASE_URL.startswith("postgresql+psycopg://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
+# If running on local host OS outside Docker container, replace container hostname 'db' with 'localhost'
+if "@db:5432" in DATABASE_URL and not os.path.exists("/.dockerenv"):
+    DATABASE_URL = DATABASE_URL.replace("@db:5432", "@localhost:5432")
+
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,

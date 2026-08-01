@@ -1,6 +1,6 @@
 """Constants for vector embedding model generation and batching."""
 
-EMBEDDING_MODEL = "text-embedding-004"
+EMBEDDING_MODEL = "gemini-embedding-001"
 EMBEDDING_DIMENSIONS = 768
 EMBEDDING_BATCH_SIZE = 100
 EMBEDDING_MAX_RETRIES = 3

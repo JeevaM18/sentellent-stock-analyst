@@ -1,6 +1,8 @@
 import os
 from typing import Any
+from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 from app.embeddings.constants import (
     DEFAULT_EMBEDDING_PROVIDER,
@@ -12,24 +14,25 @@ from app.embeddings.provider import BaseEmbeddingProvider
 from app.embeddings.types import EmbeddingResult
 from app.embeddings.utils import validate_dimension
 
+load_dotenv()
+
 
 class GoogleEmbeddingProvider(BaseEmbeddingProvider):
     """
-    Google Generative AI vector embedding provider for Gemini text-embedding-004.
+    Google Generative AI vector embedding provider for gemini-embedding-001.
     Exposes clean provider abstraction hiding internal SDK response objects.
     """
 
     def __init__(self, api_key: str | None = None):
         key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         if not key:
-            # Fallback to empty string for test mocking environment initialization
             key = "MOCK_API_KEY"
         self.client = genai.Client(api_key=key)
 
     def embed_text(
         self, *, text: str, metadata: dict[str, Any] | None = None
     ) -> EmbeddingResult:
-        """Generate vector embedding for single text string via Gemini text-embedding-004."""
+        """Generate vector embedding for single text string via gemini-embedding-001."""
         if not text or not text.strip():
             raise ValueError("Text string for embedding cannot be empty")
 
@@ -37,6 +40,9 @@ class GoogleEmbeddingProvider(BaseEmbeddingProvider):
             response = self.client.models.embed_content(
                 model=EMBEDDING_MODEL,
                 contents=text,
+                config=types.EmbedContentConfig(
+                    output_dimensionality=EMBEDDING_DIMENSIONS
+                ),
             )
         except Exception as exc:
             raise EmbeddingProviderError(f"Google embedding API error: {exc}") from exc
