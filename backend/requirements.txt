@@ -13,3 +13,5 @@ yfinance>=0.2.38,<1.0.0
 feedparser>=6.0.11,<7.0.0
 beautifulsoup4>=4.12.3,<5.0.0
 requests>=2.32.3,<3.0.0
+langchain-text-splitters>=0.3.0,<1.0.0
+tiktoken>=0.8.0,<1.0.0
