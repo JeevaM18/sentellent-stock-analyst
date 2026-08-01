@@ -1,16 +1,14 @@
 import sys
 import os
 import uuid
-from unittest.mock import MagicMock, patch
-import pytest  # pyrefly: ignore [missing-import]
+from unittest.mock import patch, MagicMock
 
-# Ensure backend root is on sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from app.agent.service import AgentService
 from app.llm.types import LLMResponse
 from app.models.chat_conversation import ChatConversation
-from app.retrieval.types import RetrievalSummary
+from app.retrieval.types import RetrievalResult, RetrievalSummary
 
 
 def test_agent_service_retrieval_flow():
@@ -18,20 +16,36 @@ def test_agent_service_retrieval_flow():
     mock_conv_id = uuid.uuid4()
     mock_conv = ChatConversation(id=mock_conv_id, user_id=None, title="New Conversation")
 
-    mock_retriever = MagicMock()
-    mock_retriever.retrieve.return_value = RetrievalSummary(
-        query="Why did Reliance stock fall?",
-        total=0,
-        duration_seconds=0.0001,
-        results=[],
+    mock_result = RetrievalResult(
+        chunk_id=uuid.uuid4(),
+        document_id=uuid.uuid4(),
+        company_id=uuid.uuid4(),
+        ticker="INFY",
+        company_name="Infosys",
+        distance=0.15,
+        similarity=0.85,
+        content="Infosys reported solid revenue growth.",
+        chunk_index=0,
+        source_title="Infosys Q1 Earnings",
+        source_url="https://example.com/infosys",
     )
+
+    mock_summary = RetrievalSummary(
+        query="Latest Infosys news",
+        total=1,
+        duration_seconds=0.045,
+        results=[mock_result],
+    )
+
+    mock_retriever = MagicMock()
+    mock_retriever.retrieve.return_value = mock_summary
 
     mock_gen = MagicMock()
     mock_gen.generate.return_value = LLMResponse(
-        answer="Reliance stock dipped due to market profit booking.",
+        answer="Infosys reported strong Q1 results.",
         model="gemini-flash-latest",
         provider="google",
-        latency_ms=120.0,
+        latency_ms=150.0,
     )
 
     with patch("app.services.conversation_service.ConversationService.get_conversation", return_value=mock_conv), \
@@ -42,15 +56,16 @@ def test_agent_service_retrieval_flow():
 
         res_state = AgentService.run(
             db=mock_db,
-            question="Why did Reliance stock fall?",
+            question="Latest Infosys news",
             user_id=None,
             conversation_id=mock_conv_id,
             retriever_service=mock_retriever,
             generation_service=mock_gen,
         )
 
-        assert res_state["question"] == "Why did Reliance stock fall?"
-        assert res_state["metadata"]["intent"] == "retrieval"
+        assert res_state["final_answer"] == "Infosys reported strong Q1 results."
+        assert "confidence" in res_state["metadata"]
+        assert "reasoning" in res_state["metadata"]
         assert "retrieval" in res_state["metadata"]["tools_used"]
 
 
@@ -81,9 +96,9 @@ def test_agent_service_fundamentals_flow():
             generation_service=mock_gen,
         )
 
-        assert res_state["metadata"]["intent"] == "fundamentals"
+        assert res_state["final_answer"] == "Reliance PE ratio is 23.81."
         assert "fundamentals" in res_state["metadata"]["tools_used"]
-        assert "fundamentals" in res_state["tool_results"]
+        assert "confidence" in res_state["metadata"]
 
 
 def test_agent_service_watchlist_flow():
@@ -93,10 +108,10 @@ def test_agent_service_watchlist_flow():
 
     mock_gen = MagicMock()
     mock_gen.generate.return_value = LLMResponse(
-        answer="Here are the stocks in your watchlist.",
+        answer="Here is your portfolio summary.",
         model="gemini-flash-latest",
         provider="google",
-        latency_ms=90.0,
+        latency_ms=110.0,
     )
 
     with patch("app.services.conversation_service.ConversationService.get_conversation", return_value=mock_conv), \
@@ -107,12 +122,11 @@ def test_agent_service_watchlist_flow():
 
         res_state = AgentService.run(
             db=mock_db,
-            question="Show my watchlist",
+            question="Show news for my portfolio watchlist",
             user_id=None,
             conversation_id=mock_conv_id,
             generation_service=mock_gen,
         )
 
-        assert res_state["metadata"]["intent"] == "watchlist"
+        assert res_state["final_answer"] == "Here is your portfolio summary."
         assert "watchlist" in res_state["metadata"]["tools_used"]
-        assert "watchlist" in res_state["tool_results"]

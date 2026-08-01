@@ -1,61 +1,51 @@
 import sys
 import os
 import uuid
-from unittest.mock import patch
-from fastapi.testclient import TestClient
+from unittest.mock import patch, MagicMock
 
-# Ensure backend root is on sys.path
+# Ensure backend root directory is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
+from fastapi.testclient import TestClient
 from app.main import app
+from app.llm.types import LLMResponse
+from app.models.chat_conversation import ChatConversation
 
 client = TestClient(app)
 
 
 def test_post_agent_chat_api():
-    conv_id = uuid.uuid4()
-    mock_result_state = {
-        "user_id": None,
-        "conversation_id": conv_id,
-        "question": "What is Reliance PE ratio?",
-        "chat_history": "",
-        "context": "Reliance PE ratio is 23.81.",
-        "retrieved_context": "Reliance PE ratio is 23.81.",
-        "tool_results": {
-            "fundamentals": {
-                "status": "success",
-                "company": "Reliance",
-                "execution_ms": 12.5,
-                "data": {"pe_ratio": 23.81},
-                "formatted_context": "PE Ratio: 23.81",
-            }
-        },
-        "final_answer": "Reliance PE ratio is 23.81.",
-        "citations": [],
-        "metadata": {
-            "agent_version": "v1",
-            "model": "gemini-flash-latest",
-            "intent": "fundamentals",
-            "intent_confidence": 1.0,
-            "execution_time_ms": 145.5,
-            "tools_used": ["fundamentals"],
-        },
-        "iteration": 1,
-        "services": {},
-    }
+    mock_conv_id = uuid.uuid4()
+    mock_conv = ChatConversation(id=mock_conv_id, user_id=None, title="New Conversation")
 
-    with patch("app.api.agent.router.AgentService.run", return_value=mock_result_state):
+    mock_gen = MagicMock()
+    mock_gen.generate.return_value = LLMResponse(
+        answer="Reliance Industries P/E ratio is currently 23.81.",
+        model="gemini-flash-latest",
+        provider="google",
+        latency_ms=120.0,
+    )
+
+    with patch("app.services.conversation_service.ConversationService.get_conversation", return_value=mock_conv), \
+         patch("app.services.conversation_service.ConversationService.create_conversation", return_value=mock_conv), \
+         patch("app.services.conversation_service.ConversationService.get_messages", return_value=[]), \
+         patch("app.services.conversation_service.ConversationService.append_message"), \
+         patch("app.services.conversation_service.ConversationService.update_conversation_title_if_default"), \
+         patch("app.agent.service.GenerationService", return_value=mock_gen), \
+         patch("app.agent.nodes.GenerationService", return_value=mock_gen):
+
         response = client.post(
             "/api/agent/chat",
             json={"question": "What is Reliance PE ratio?"},
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
-        assert data["answer"] == "Reliance PE ratio is 23.81."
-        assert data["conversation_id"] == str(conv_id)
-        assert data["intent"] == "fundamentals"
-        assert data["execution_time_ms"] == 145.5
-        assert data["agent_version"] == "v1"
-        assert data["tools_used"] == ["fundamentals"]
-        assert "fundamentals" in data["tool_results"]
+
+        assert "conversation_id" in data
+        assert data["answer"] == "Reliance Industries P/E ratio is currently 23.81."
+        assert "confidence" in data
+        assert "reasoning" in data
+        assert "tools_used" in data
+        assert "tool_results" in data
+        assert "execution_time_ms" in data

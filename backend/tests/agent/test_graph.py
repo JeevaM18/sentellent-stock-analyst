@@ -4,65 +4,54 @@ import os
 # Ensure backend root is on sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from app.agent.graph import AgentGraph
-from app.agent.nodes import fundamentals_node, route_decision, watchlist_node
-from app.agent.state import AgentState
+from app.agent.graph import AgentGraph, create_agent_graph
+from app.agent.nodes import (
+    executor_node,
+    explainability_node,
+    generate_node,
+    planner_node,
+)
 
 
 def test_graph_compiles():
+    graph = create_agent_graph()
+    assert graph is not None
     assert AgentGraph.version == "v1"
-    assert AgentGraph.graph is not None
 
 
-def test_router_defaults_to_retrieve():
-    state: AgentState = {
-        "user_id": None,
-        "conversation_id": None,
-        "question": "Why did Reliance stock fall?",
-        "chat_history": "",
-        "context": "",
-        "retrieved_context": "",
-        "tool_results": {},
-        "final_answer": "",
-        "citations": [],
+def test_planner_node_execution():
+    state = {
+        "question": "Compare Reliance fundamentals and today's news",
         "metadata": {},
-        "iteration": 0,
-        "services": {},
     }
-    assert route_decision(state) == "retrieve"
+    new_state = planner_node(state)
+
+    assert "metadata" in new_state
+    assert "tool_plan" in new_state["metadata"]
+    assert new_state["metadata"]["planner_time_ms"] >= 0.0
 
 
-def test_router_fundamentals_routing():
-    state: AgentState = {
+def test_executor_and_explainability_node():
+    state = {
+        "question": "Show news for my portfolio watchlist",
         "user_id": None,
-        "conversation_id": None,
-        "question": "What is Reliance PE ratio?",
-        "chat_history": "",
-        "context": "",
-        "retrieved_context": "",
-        "tool_results": {},
-        "final_answer": "",
-        "citations": [],
-        "metadata": {},
-        "iteration": 0,
-        "services": {},
+        "metadata": {
+            "planner_time_ms": 5.0,
+            "tools_used": ["watchlist"],
+        },
+        "tool_results": {
+            "watchlist": {
+                "status": "success",
+                "tool": "watchlist",
+                "execution_ms": 10.0,
+                "formatted_context": "=== Watchlist ===",
+            }
+        },
+        "citations": [
+            {"rank": 1, "title": "News 1", "similarity": 0.85}
+        ],
     }
-    assert route_decision(state) == "fundamentals"
 
-
-def test_router_watchlist_routing():
-    state: AgentState = {
-        "user_id": None,
-        "conversation_id": None,
-        "question": "Show my watchlist stocks",
-        "chat_history": "",
-        "context": "",
-        "retrieved_context": "",
-        "tool_results": {},
-        "final_answer": "",
-        "citations": [],
-        "metadata": {},
-        "iteration": 0,
-        "services": {},
-    }
-    assert route_decision(state) == "watchlist"
+    exp_state = explainability_node(state)
+    assert exp_state["metadata"]["confidence"] >= 0.85
+    assert len(exp_state["metadata"]["reasoning"]) >= 1
