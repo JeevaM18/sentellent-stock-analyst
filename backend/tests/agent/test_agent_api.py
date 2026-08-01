@@ -17,17 +17,28 @@ def test_post_agent_chat_api():
     mock_result_state = {
         "user_id": None,
         "conversation_id": conv_id,
-        "question": "What is TCS Q1 net profit?",
+        "question": "What is Reliance PE ratio?",
         "chat_history": "",
-        "retrieved_context": "TCS net profit rose 8.7% YoY.",
-        "tool_results": {"retrieval": {"status": "success", "chunks_found": 1}},
-        "final_answer": "TCS net profit grew by 8.7% year-on-year.",
-        "citations": [{"title": "TCS Q1 Report", "similarity": 0.88}],
+        "context": "Reliance PE ratio is 23.81.",
+        "retrieved_context": "Reliance PE ratio is 23.81.",
+        "tool_results": {
+            "fundamentals": {
+                "status": "success",
+                "company": "Reliance",
+                "execution_ms": 12.5,
+                "data": {"pe_ratio": 23.81},
+                "formatted_context": "PE Ratio: 23.81",
+            }
+        },
+        "final_answer": "Reliance PE ratio is 23.81.",
+        "citations": [],
         "metadata": {
             "agent_version": "v1",
             "model": "gemini-flash-latest",
+            "intent": "fundamentals",
+            "intent_confidence": 1.0,
             "execution_time_ms": 145.5,
-            "tools_used": ["retrieval"],
+            "tools_used": ["fundamentals"],
         },
         "iteration": 1,
         "services": {},
@@ -36,14 +47,15 @@ def test_post_agent_chat_api():
     with patch("app.api.agent.router.AgentService.run", return_value=mock_result_state):
         response = client.post(
             "/api/agent/chat",
-            json={"question": "What is TCS Q1 net profit?"},
+            json={"question": "What is Reliance PE ratio?"},
         )
 
         assert response.status_code == 200
         data = response.json()
-        assert data["answer"] == "TCS net profit grew by 8.7% year-on-year."
+        assert data["answer"] == "Reliance PE ratio is 23.81."
         assert data["conversation_id"] == str(conv_id)
+        assert data["intent"] == "fundamentals"
         assert data["execution_time_ms"] == 145.5
         assert data["agent_version"] == "v1"
-        assert data["tools_used"] == ["retrieval"]
-        assert len(data["citations"]) == 1
+        assert data["tools_used"] == ["fundamentals"]
+        assert "fundamentals" in data["tool_results"]

@@ -18,8 +18,9 @@ def test_router_defaults_to_retrieve():
     state: AgentState = {
         "user_id": None,
         "conversation_id": None,
-        "question": "What is Reliance PE ratio?",
+        "question": "Why did Reliance stock fall?",
         "chat_history": "",
+        "context": "",
         "retrieved_context": "",
         "tool_results": {},
         "final_answer": "",
@@ -28,16 +29,16 @@ def test_router_defaults_to_retrieve():
         "iteration": 0,
         "services": {},
     }
-    target_node = route_decision(state)
-    assert target_node == "retrieve"
+    assert route_decision(state) == "retrieve"
 
 
-def test_tool_stubs_no_break():
+def test_router_fundamentals_routing():
     state: AgentState = {
         "user_id": None,
         "conversation_id": None,
-        "question": "Test question",
+        "question": "What is Reliance PE ratio?",
         "chat_history": "",
+        "context": "",
         "retrieved_context": "",
         "tool_results": {},
         "final_answer": "",
@@ -46,5 +47,22 @@ def test_tool_stubs_no_break():
         "iteration": 0,
         "services": {},
     }
-    assert fundamentals_node(state) == state
-    assert watchlist_node(state) == state
+    assert route_decision(state) == "fundamentals"
+
+
+def test_router_watchlist_routing():
+    state: AgentState = {
+        "user_id": None,
+        "conversation_id": None,
+        "question": "Show my watchlist stocks",
+        "chat_history": "",
+        "context": "",
+        "retrieved_context": "",
+        "tool_results": {},
+        "final_answer": "",
+        "citations": [],
+        "metadata": {},
+        "iteration": 0,
+        "services": {},
+    }
+    assert route_decision(state) == "watchlist"
