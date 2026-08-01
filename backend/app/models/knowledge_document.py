@@ -13,6 +13,7 @@ from app.models.enums import DocumentType
 if TYPE_CHECKING:
     from app.models.company import Company
     from app.models.document_embedding import DocumentEmbedding
+    from app.models.document_chunk import DocumentChunk
 
 
 class KnowledgeDocument(BaseModelMixin, Base):
@@ -74,6 +75,12 @@ class KnowledgeDocument(BaseModelMixin, Base):
     company: Mapped["Company"] = relationship(
         "Company",
         back_populates="documents",
+    )
+
+    chunks: Mapped[list["DocumentChunk"]] = relationship(
+        "DocumentChunk",
+        back_populates="document",
+        cascade="all, delete-orphan",
     )
 
     embedding: Mapped[Optional["DocumentEmbedding"]] = relationship(

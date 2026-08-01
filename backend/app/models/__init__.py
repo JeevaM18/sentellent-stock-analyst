@@ -5,6 +5,7 @@ from app.models.company import Company
 from app.models.company_fundamentals import CompanyFundamentals
 from app.models.user_followed_stock import UserFollowedStock
 from app.models.knowledge_document import KnowledgeDocument
+from app.models.document_chunk import DocumentChunk
 from app.models.document_embedding import DocumentEmbedding
 from app.models.chat_session import ChatSession
 from app.models.chat_message import ChatMessage
@@ -19,6 +20,7 @@ __all__ = [
     "CompanyFundamentals",
     "UserFollowedStock",
     "KnowledgeDocument",
+    "DocumentChunk",
     "DocumentEmbedding",
     "ChatSession",
     "ChatMessage",
