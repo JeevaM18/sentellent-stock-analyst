@@ -41,9 +41,11 @@ def post_agent_chat(
         return AgentChatResponse(
             answer=result_state.get("final_answer", ""),
             conversation_id=result_state["conversation_id"],
+            intent=metadata.get("intent", "retrieval"),
             execution_time_ms=metadata.get("execution_time_ms", 0.0),
             agent_version=metadata.get("agent_version", "v1"),
             tools_used=metadata.get("tools_used", []),
+            tool_results=result_state.get("tool_results", {}),
             citations=result_state.get("citations", []),
         )
     except HTTPException:
