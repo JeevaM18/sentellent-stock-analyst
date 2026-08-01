@@ -76,15 +76,16 @@ class FundamentalsTool(BaseAgentTool):
 
         return " ".join(parts)
 
-    def run(self, db: Session | None = None, query: str = "", **kwargs: Any) -> dict[str, Any]:
+    def run(self, db: Session | None = None, query: str = "", ticker: str | None = None, **kwargs: Any) -> dict[str, Any]:
         """
         Execute database lookup for company fundamentals and compute financial analysis interpretations.
         """
         start_time = time.perf_counter()
         found_company: Company | None = None
+        search_term = ticker or query
 
-        if db and query:
-            tokens = [t for t in re.split(r'[\s,\.\?\!]+', query) if len(t) >= 2]
+        if db and search_term:
+            tokens = [t for t in re.split(r'[\s,\.\?\!]+', search_term) if len(t) >= 2]
             for token in tokens:
                 comp = (
                     db.query(Company)
@@ -102,19 +103,26 @@ class FundamentalsTool(BaseAgentTool):
         duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
         if not found_company:
-            formatted_context = f"No company fundamental data found in database matching query '{query}'."
-            return {
-                "status": "not_found",
-                "execution_ms": duration_ms,
-                "company": None,
-                "data": {},
-                "analysis": {
-                    "valuation": "N/A",
-                    "leverage": "N/A",
-                    "profitability": "N/A",
-                },
-                "formatted_context": formatted_context,
+            formatted_context = f"No company fundamental data found in database matching query '{search_term}'."
+            analysis = {
+                "valuation": "N/A",
+                "leverage": "N/A",
+                "profitability": "N/A",
             }
+            output = self.format_output(
+                tool_name=self.name,
+                status="not_found",
+                execution_ms=duration_ms,
+                formatted_context=formatted_context,
+                data={
+                    "company_name": None,
+                    "ticker": ticker,
+                    "analysis": analysis,
+                },
+            )
+            output["company"] = None
+            output["analysis"] = analysis
+            return output
 
         f = getattr(found_company, "fundamentals", None)
 
@@ -155,6 +163,7 @@ class FundamentalsTool(BaseAgentTool):
             "leverage": self.analyze_leverage(dte),
             "profitability": self.analyze_profitability(roe_val, div),
         }
+        data["analysis"] = analysis
 
         mcap_formatted = f"₹{mcap:,}" if isinstance(mcap, (int, float)) else f"₹{mcap}" if mcap is not None else "N/A"
 
@@ -178,11 +187,13 @@ class FundamentalsTool(BaseAgentTool):
         ]
         formatted_context = "\n".join(formatted_lines)
 
-        return {
-            "status": "success",
-            "execution_ms": duration_ms,
-            "company": data["company_name"],
-            "data": data,
-            "analysis": analysis,
-            "formatted_context": formatted_context,
-        }
+        output = self.format_output(
+            tool_name=self.name,
+            status="success",
+            execution_ms=duration_ms,
+            formatted_context=formatted_context,
+            data=data,
+        )
+        output["company"] = data["company_name"]
+        output["analysis"] = analysis
+        return output
