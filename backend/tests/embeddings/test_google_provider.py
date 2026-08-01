@@ -24,7 +24,7 @@ def test_embed_text_success(mock_client_cls):
     res = provider.embed_text(text="Reliance Q1 earnings report", metadata={"chunk_index": 0})
 
     assert isinstance(res, EmbeddingResult)
-    assert res.model == "text-embedding-004"
+    assert res.model == "gemini-embedding-001"
     assert res.provider == "google"
     assert res.dimensions == 768
     assert len(res.vector) == 768
