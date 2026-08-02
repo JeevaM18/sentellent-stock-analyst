@@ -10,6 +10,8 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 import pgvector
+import pgvector.sqlalchemy
+from pgvector.sqlalchemy import Vector
 
 
 # revision identifiers, used by Alembic.
