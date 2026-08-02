@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AuthProvider from "@/components/auth/AuthProvider";
+import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sentellent Stock Analyst",
-  description: "AI-Powered Stock Analysis Platform with RAG and Long-Term Memory",
+  title: "Sentellent Alpha | Financial Intelligence Platform",
+  description: "AI-Powered Stock Analysis, Recommendation Engine & Financial Advisor",
 };
 
 export default function RootLayout({
@@ -28,8 +29,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
-        <AuthProvider>{children}</AuthProvider>
+      <body className="min-h-full flex flex-col bg-[#050816] text-slate-100">
+        <AuthProvider>
+          <AppShell>{children}</AppShell>
+        </AuthProvider>
       </body>
     </html>
   );

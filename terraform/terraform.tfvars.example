@@ -1,0 +1,17 @@
+# AWS Infrastructure Configuration
+aws_region   = "ap-south-1"
+project_name = "Sentellent"
+environment  = "Production"
+
+# Database Secrets
+db_name     = "stock_analyst"
+db_username = "jeeva"
+db_password = "ReplaceWithStrongProductionPassword123!"
+
+# Application Secrets
+google_api_key       = "AIzaSy..."
+openrouter_api_key   = "sk-or-v1-..."
+google_client_id     = "889049963332-uqr358deno7kvqi17tpntrjb9q1ule4l.apps.googleusercontent.com"
+google_client_secret = "GOCSPX-..."
+auth_secret          = "ba33e4914440fff6ceb17f4d868656e11b2cce74de5dd1368bbc8b04ade5bcfb"
+allowed_origins      = "http://localhost:3000,http://localhost:3001"

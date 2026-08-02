@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.constants import SUPPORTED_EXCHANGES, SUPPORTED_SECTORS
+from app.models.knowledge_document import KnowledgeDocument
 from app.schemas.company import CompanyResponse, PaginatedCompanyResponse
 from app.services.company_service import CompanyService
 
@@ -78,6 +79,42 @@ def get_company_by_ticker(
             detail=f"Company with ticker '{ticker.upper()}' not found",
         )
     return company
+
+
+@router.get("/ticker/{ticker}/news")
+def get_company_news_by_ticker(
+    ticker: str,
+    limit: int = Query(5, ge=1, le=20),
+    db: Session = Depends(get_db),
+):
+    """Retrieve company news directly from PostgreSQL without vector search or LLMs."""
+    company = CompanyService.get_company_by_ticker(db, ticker)
+    if not company:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Company with ticker '{ticker.upper()}' not found",
+        )
+
+    docs = (
+        db.query(KnowledgeDocument)
+        .filter(KnowledgeDocument.company_id == company.id)
+        .order_by(KnowledgeDocument.published_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [
+        {
+            "id": str(d.id),
+            "title": d.title,
+            "summary": d.summary or (d.content[:200] + "..." if d.content else "No summary available."),
+            "source": d.source,
+            "source_url": d.source_url,
+            "published_at": d.published_at.isoformat() if d.published_at else None,
+            "sentiment": "Positive" if "growth" in d.title.lower() or "profit" in d.title.lower() else "Neutral",
+        }
+        for d in docs
+    ]
 
 
 @router.get(

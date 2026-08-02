@@ -20,6 +20,18 @@ class YahooFinanceProvider(BaseFundamentalsProvider):
     """
     Resilient fundamentals provider utilizing yfinance with automatic retries,
     data validation, and metadata logging envelopes.
+
+    Note:
+    Yahoo Finance (via yfinance) may not return certain valuation and
+    profitability metrics (e.g. trailingPE, returnOnEquity,
+    debtToEquity, dividendYield) for some exchanges, particularly
+    non-US markets.
+
+    When these values are unavailable:
+    - They are not written to the database.
+    - Existing database values are preserved.
+    - FundamentalsTool produces graceful reasoning such as
+      "P/E ratio data unavailable" instead of failing.
     """
 
     def fetch(self, ticker: str) -> dict[str, Any]:

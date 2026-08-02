@@ -13,6 +13,8 @@ class AgentChatResponse(BaseModel):
     """Enriched explainable API response schema."""
     conversation_id: UUID = Field(..., description="Active conversation session UUID")
     answer: str = Field(..., description="Generated grounded response from financial assistant")
+    status: str = Field(default="success", description="Status string: 'success' or 'quota_exceeded'")
+    retry_after: int | None = Field(default=None, description="Recommended seconds to wait before retrying if rate limited")
     intent: str = Field(default="retrieval", description="Classified query intent or primary tool")
     confidence: float = Field(default=0.85, description="Rule-based confidence score (0.0 to 1.0)")
     reasoning: list[str] = Field(default_factory=list, description="Reasoning trace steps explaining agent execution")

@@ -5,8 +5,6 @@ const protectedRoutes = [
   "/dashboard",
   "/chat",
   "/profile",
-  "/watchlist",
-  "/portfolio",
   "/settings",
 ]
 

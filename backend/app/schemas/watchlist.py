@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
+from app.schemas.company import CompanyResponse
 
 
 class FollowCompanyRequest(BaseModel):
@@ -15,6 +16,7 @@ class WatchlistItemResponse(BaseModel):
     sector: str | None = None
     followed_at: datetime
     following: bool = True
+    company: CompanyResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -20,14 +20,19 @@ load_dotenv()
 class GoogleEmbeddingProvider(BaseEmbeddingProvider):
     """
     Google Generative AI vector embedding provider for gemini-embedding-001.
-    Exposes clean provider abstraction hiding internal SDK response objects.
+    Lazy-loads SDK client only when embed_text is executed (Zero startup overhead).
     """
 
     def __init__(self, api_key: str | None = None):
-        key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-        if not key:
-            key = "MOCK_API_KEY"
-        self.client = genai.Client(api_key=key)
+        self.api_key = api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or "MOCK_API_KEY"
+        self._client = None
+
+    @property
+    def client(self) -> genai.Client:
+        """Lazy instantiation of genai.Client on first embedding request."""
+        if self._client is None:
+            self._client = genai.Client(api_key=self.api_key)
+        return self._client
 
     def embed_text(
         self, *, text: str, metadata: dict[str, Any] | None = None

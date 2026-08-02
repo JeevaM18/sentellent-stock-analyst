@@ -4,17 +4,11 @@ from typing import Any
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from app.llm.service import GenerationService
-from app.rag.types import RAGContext
 from app.recommendation.builder import RecommendationContextBuilder
 from app.recommendation.candidate_builder import RecommendationCandidateBuilder
 from app.recommendation.constants import (
-    DEFAULT_RECOMMENDATION_MODEL,
     DEFAULT_TOP_K,
     RECOMMENDATION_VERSION,
-)
-from app.recommendation.prompts import (
-    RECOMMENDATION_EXPLANATION_SYSTEM_PROMPT,
 )
 from app.recommendation.ranking import RecommendationRanker
 from app.recommendation.scorer import RecommendationScorer
@@ -27,7 +21,7 @@ logger = logging.getLogger(__name__)
 class RecommendationService:
     """
     Orchestration service running candidate collection, weighted scoring, ranking,
-    context building, and grounded Gemini LLM explanation generation.
+    and deterministic explanation generation (100% DB/Math, zero LLM credit consumption).
     """
 
     @classmethod
@@ -41,9 +35,8 @@ class RecommendationService:
         sector_filter: str | None = None,
         include_watchlist: bool = True,
         retriever_service: RetrieverService | None = None,
-        generation_service: GenerationService | None = None,
     ) -> dict[str, Any]:
-        """Execute complete recommendation pipeline and return structured result dict."""
+        """Execute complete recommendation pipeline deterministically without LLM calls."""
         start_total = time.perf_counter()
 
         # Step 1: Collect Candidates
@@ -72,18 +65,19 @@ class RecommendationService:
         # Step 4: Build Context
         context_str = RecommendationContextBuilder.build_context(top_results, memory)
 
-        # Step 5: Generate LLM Explanation
-        start_llm = time.perf_counter()
-        gen_service = generation_service or GenerationService()
-        rag_context = RAGContext(
-            question=question,
-            system_prompt=RECOMMENDATION_EXPLANATION_SYSTEM_PROMPT,
-            context=context_str,
-            chat_history="",
-            prompt_version=RECOMMENDATION_VERSION,
+        # Step 5: Build Deterministic Structured Explanation (Zero LLM API Cost)
+        explanation_parts = []
+        for r in top_results:
+            reasons_str = "; ".join([f"{reason.title}: {reason.description}" for reason in r.reasons])
+            explanation_parts.append(
+                f"{r.company_name} ({r.ticker}) scored {r.score.overall_score:.1f}/100 based on fundamental rating ({r.score.fundamental_score:.0f}/100) and sentiment ({r.score.news_score:.0f}/100). Key drivers: {reasons_str}."
+            )
+
+        explanation = (
+            " ".join(explanation_parts)
+            if explanation_parts
+            else "Deterministic recommendation pipeline evaluated candidate stocks against PostgreSQL financial metrics."
         )
-        llm_resp = gen_service.generate(rag_context=rag_context)
-        llm_ms = round((time.perf_counter() - start_llm) * 1000, 2)
 
         total_ms = round((time.perf_counter() - start_total) * 1000, 2)
 
@@ -102,17 +96,16 @@ class RecommendationService:
 
         metadata = {
             "version": RECOMMENDATION_VERSION,
-            "model": DEFAULT_RECOMMENDATION_MODEL,
             "candidates_ms": candidates_ms,
             "scoring_ms": scoring_ms,
             "ranking_ms": ranking_ms,
-            "llm_ms": llm_ms,
+            "llm_ms": 0.0,
             "total_latency_ms": total_ms,
             "candidates_evaluated": len(candidates),
         }
 
         logger.info(
-            "RecommendationService completed for user %s: evaluated %d candidates, returning top %d in %.2f ms",
+            "Deterministic RecommendationService completed for user %s: evaluated %d candidates, returning top %d in %.2f ms (LLM Calls: 0)",
             user_id,
             len(candidates),
             len(top_results),
@@ -120,7 +113,7 @@ class RecommendationService:
         )
 
         return {
-            "explanation": llm_resp.answer,
+            "explanation": explanation,
             "recommendations": top_results,
             "summary": summary,
             "citations": all_citations,

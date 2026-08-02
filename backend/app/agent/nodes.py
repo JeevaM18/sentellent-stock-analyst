@@ -8,6 +8,7 @@ from app.agent.prompts import AGENT_SYSTEM_PROMPT
 from app.agent.state import AgentState
 from app.investor_memory.builder import MemoryBuilder
 from app.investor_memory.service import InvestorMemoryService
+from app.llm.google_provider import QuotaExceededError
 from app.llm.service import GenerationService
 from app.rag.types import RAGContext
 from app.retrieval.service import RetrieverService
@@ -111,6 +112,7 @@ def generate_node(state: AgentState, config: RunnableConfig | None = None) -> Ag
     """
     Node executing LLM answer generation based on system prompt, chat history,
     personalized investor memory context, and active context.
+    Falls back gracefully to RAG evidence if Gemini rate limit / quota is reached.
     """
     services = state.get("services", {})
     cfg = (config or {}).get("configurable", {}) if isinstance(config, dict) else {}
@@ -147,18 +149,39 @@ def generate_node(state: AgentState, config: RunnableConfig | None = None) -> Ag
         prompt_version="v1",
     )
 
-    llm_resp = gen_service.generate(rag_context=rag_context)
-    duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
-
     metadata = dict(state.get("metadata", {}))
-    metadata["generation_time_ms"] = duration_ms
-    metadata["model"] = llm_resp.model
 
-    return {
-        **state,
-        "final_answer": llm_resp.answer,
-        "metadata": metadata,
-    }
+    try:
+        llm_resp = gen_service.generate(rag_context=rag_context)
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        metadata["generation_time_ms"] = duration_ms
+        metadata["model"] = llm_resp.model
+
+        return {
+            **state,
+            "final_answer": llm_resp.answer,
+            "metadata": metadata,
+        }
+    except (QuotaExceededError, Exception) as exc:
+        exc_str = str(exc)
+        logger.warning("LLM generation caught exception in generate_node, activating RAG fallback: %s", exc)
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        metadata["generation_time_ms"] = duration_ms
+        metadata["quota_exceeded"] = True
+        metadata["retry_after"] = 30
+        metadata["status"] = "quota_exceeded"
+
+        fallback_answer = (
+            f"**AI Service Temporarily Rate Limited (5 req/min)**\n\n"
+            f"The Gemini AI model limit was reached. Here is the verified RAG evidence and company fundamental data retrieved for your question:\n\n"
+            f"{active_context}"
+        )
+
+        return {
+            **state,
+            "final_answer": fallback_answer,
+            "metadata": metadata,
+        }
 
 
 def explainability_node(state: AgentState, config: RunnableConfig | None = None) -> AgentState:
@@ -197,6 +220,9 @@ def explainability_node(state: AgentState, config: RunnableConfig | None = None)
         st = res.get("status", "unknown")
         exec_ms = res.get("execution_ms", 0.0)
         reasoning.append(f"Executed tool '{tool_name}' (status: {st}, latency: {exec_ms:.2f} ms)")
+
+    if metadata.get("quota_exceeded"):
+        reasoning.append("Gemini rate limit detected — Switched to RAG retrieval fallback mode")
 
     if citations:
         reasoning.append(f"Retrieved {len(citations)} supporting knowledge document chunks")

@@ -1,26 +1,34 @@
 from uuid import UUID
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import or_
 
 from app.models.company import Company
 from app.schemas.company import CompanyBase
+
+# Premier Indian Stock Market Marquee Tickers (shown first in results)
+PRIORITY_TICKERS = [
+    "RELIANCE", "TCS", "HDFCBANK", "INFY", "TATAMOTORS", "ITC",
+    "SBIN", "ICICIBANK", "BHARTIARTL", "LT", "HINDUNILVR",
+    "AXISBANK", "WIPRO", "MARUTI", "SUNPHARMA", "COALINDIA", "NTPC"
+]
 
 
 class CompanyService:
 
     @staticmethod
     def get_company_by_id(db: Session, company_id: UUID) -> Company | None:
-        return db.query(Company).filter(Company.id == company_id).first()
+        return db.query(Company).options(selectinload(Company.fundamentals)).filter(Company.id == company_id).first()
 
     @staticmethod
     def get_company_by_ticker(db: Session, ticker: str) -> Company | None:
-        return db.query(Company).filter(Company.ticker == ticker.upper()).first()
+        return db.query(Company).options(selectinload(Company.fundamentals)).filter(Company.ticker == ticker.upper()).first()
 
     @staticmethod
     def get_active_companies(db: Session) -> list[Company]:
         """Retrieve list of active listed companies ordered by ticker."""
         return (
             db.query(Company)
+            .options(selectinload(Company.fundamentals))
             .filter(Company.is_active.is_(True))
             .order_by(Company.ticker)
             .all()
@@ -36,7 +44,7 @@ class CompanyService:
         page: int = 1,
         limit: int = 20,
     ) -> tuple[list[Company], int]:
-        query = db.query(Company)
+        query = db.query(Company).options(selectinload(Company.fundamentals))
 
         if search:
             search_pattern = f"%{search}%"
@@ -61,6 +69,12 @@ class CompanyService:
         total = query.count()
         offset = (page - 1) * limit
         companies = query.order_by(Company.ticker).offset(offset).limit(limit).all()
+
+        # Re-sort: priority tickers first, then alphabetical
+        priority_set = set(PRIORITY_TICKERS)
+        priority_companies = [c for c in companies if c.ticker in priority_set]
+        other_companies = [c for c in companies if c.ticker not in priority_set]
+        companies = priority_companies + other_companies
 
         return companies, total
 

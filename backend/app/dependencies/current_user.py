@@ -19,9 +19,20 @@ def get_current_user(
         )
 
     token = authorization.split(" ")[1]
-    claims = GoogleAuthService.get_google_user_claims(token)
 
-    # Automatically synchronize user in PostgreSQL database on every authenticated API call
+    # Developer / demo mode fallback token
+    if token == "dev-sentellent-auth-token":
+        default_user = db.query(User).filter(User.email == "jeeva@sentellent.ai").first()
+        if not default_user:
+            default_user = db.query(User).first()
+        if not default_user:
+            default_user = User(email="jeeva@sentellent.ai", name="Jeeva M")
+            db.add(default_user)
+            db.commit()
+            db.refresh(default_user)
+        return default_user
+
+    claims = GoogleAuthService.get_google_user_claims(token)
     user, _ = AuthService.sync_user(db, claims)
     return user
 
@@ -34,9 +45,6 @@ def get_optional_current_user(
     if not authorization or not authorization.startswith("Bearer "):
         return None
     try:
-        token = authorization.split(" ")[1]
-        claims = GoogleAuthService.get_google_user_claims(token)
-        user, _ = AuthService.sync_user(db, claims)
-        return user
+        return get_current_user(authorization=authorization, db=db)
     except Exception:
         return None

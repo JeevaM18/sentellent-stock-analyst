@@ -72,6 +72,7 @@ class Company(BaseModelMixin, Base):
         "CompanyFundamentals",
         back_populates="company",
         uselist=False,
+        order_by="desc(CompanyFundamentals.created_at)",
         cascade="all, delete-orphan",
     )
 
