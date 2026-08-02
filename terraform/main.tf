@@ -38,6 +38,17 @@ module "ecr" {
   name_prefix = local.name_prefix
 }
 
+# Declarative Import for pre-created ECR repositories
+import {
+  to = module.ecr.aws_ecr_repository.backend
+  id = "sentellent-production-backend"
+}
+
+import {
+  to = module.ecr.aws_ecr_repository.frontend
+  id = "sentellent-production-frontend"
+}
+
 # 5. Amazon RDS PostgreSQL Module
 module "rds" {
   source = "./modules/rds"

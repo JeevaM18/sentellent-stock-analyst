@@ -24,7 +24,7 @@ resource "aws_db_parameter_group" "pg17" {
 resource "aws_db_instance" "postgres" {
   identifier             = "${lower(var.name_prefix)}-db"
   engine                 = "postgres"
-  engine_version         = "17.1"
+  engine_version         = "17"
   instance_class         = "db.t4g.micro"
   allocated_storage      = 20
   max_allocated_storage  = 50
