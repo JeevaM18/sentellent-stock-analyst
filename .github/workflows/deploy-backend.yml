@@ -37,7 +37,7 @@ jobs:
 
     services:
       postgres:
-        image: pgvector/pgvector:pg16
+        image: pgvector/pgvector:pg16-bookworm
         env:
           POSTGRES_DB: stock_analyst
           POSTGRES_USER: jeeva
@@ -61,6 +61,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Install PostgreSQL Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
       - name: Wait for PostgreSQL
         run: |
           for i in {1..20}; do
@@ -81,6 +86,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest ruff alembic
+
+      - name: Enable pgvector Extension
+        env:
+          PGPASSWORD: jeevapassword
+        run: |
+          psql -h localhost -U jeeva -d stock_analyst -c "CREATE EXTENSION IF NOT EXISTS vector;"
+          psql -h localhost -U jeeva -d stock_analyst -c "SELECT version();"
+          psql -h localhost -U jeeva -d stock_analyst -c "\dx"
 
       - name: Run Database Migrations
         run: |
