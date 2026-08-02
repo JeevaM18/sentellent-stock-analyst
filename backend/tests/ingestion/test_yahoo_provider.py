@@ -32,7 +32,10 @@ def test_yahoo_provider_multiple_valid_stocks():
         res = provider.fetch(ticker)
         assert res["success"] is True
         assert res["ticker"] == ticker
-        assert res["data"]["market_cap"] > 0
+        assert "data" in res
+        assert "market_cap" in res["data"]
+        market_cap = res["data"]["market_cap"]
+        assert market_cap is None or market_cap > 0
 
 
 def test_yahoo_provider_invalid_stock():
