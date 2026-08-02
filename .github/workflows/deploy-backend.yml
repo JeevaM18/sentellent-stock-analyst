@@ -33,13 +33,41 @@ jobs:
   verify:
     name: Backend Verification
     runs-on: ubuntu-latest
-
     timeout-minutes: 20
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: stock_analyst
+          POSTGRES_USER: jeeva
+          POSTGRES_PASSWORD: jeevapassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U jeeva -d stock_analyst"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DATABASE_URL: postgresql+psycopg://jeeva:jeevapassword@localhost:5432/stock_analyst
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
 
     steps:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..20}; do
+            pg_isready -h localhost -U jeeva && break
+            echo "Waiting for PostgreSQL..."
+            sleep 3
+          done
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -52,7 +80,12 @@ jobs:
           cd backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest ruff
+          pip install pytest ruff alembic
+
+      - name: Run Database Migrations
+        run: |
+          cd backend
+          alembic upgrade head
 
       - name: Ruff Lint
         run: |
@@ -92,13 +125,9 @@ jobs:
           TF_VAR_auth_secret: ${{ secrets.AUTH_SECRET }}
         run: |
           cd terraform
-
           terraform init
-
           terraform fmt -check
-
           terraform validate
-
           terraform plan
 
   deploy:
@@ -161,9 +190,7 @@ jobs:
           TF_VAR_backend_image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         run: |
           cd terraform
-
           terraform init
-
           terraform apply -auto-approve
 
       - name: Force ECS Deployment
@@ -185,7 +212,7 @@ jobs:
         id: alb
         run: |
           cd terraform
-          echo "ALB_URL=$(terraform output -raw alb_dns)" >> $GITHUB_ENV
+          echo "ALB_URL=$(terraform output -raw alb_dns_name)" >> $GITHUB_ENV
 
       - name: Health Check
         run: |
