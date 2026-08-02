@@ -14,12 +14,22 @@ const nextConfig: NextConfig = {
       process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") ||
       "http://localhost:8000";
 
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${backendUrl}/api/:path*`,
-      },
-    ];
+    return {
+      beforeFiles: [
+        // Don't rewrite NextAuth routes
+        {
+          source: "/api/auth/:path*",
+          destination: "/api/auth/:path*",
+        },
+      ],
+      fallback: [
+        // Everything else goes to FastAPI
+        {
+          source: "/api/:path*",
+          destination: `${backendUrl}/api/:path*`,
+        },
+      ],
+    };
   },
 };
 
