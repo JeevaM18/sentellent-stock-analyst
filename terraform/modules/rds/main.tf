@@ -42,7 +42,7 @@ resource "aws_db_instance" "postgres" {
   parameter_group_name   = aws_db_parameter_group.pg17.name
   vpc_security_group_ids = [var.rds_security_group_id]
 
-  backup_retention_period = 7
+  backup_retention_period = 1
 
   tags = {
     Name = "${var.name_prefix}-postgres-db"
