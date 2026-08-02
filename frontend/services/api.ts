@@ -1,4 +1,9 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_BASE_URL =
+  typeof window !== "undefined"
+    ? "/api"
+    : process.env.BACKEND_INTERNAL_URL
+    ? `${process.env.BACKEND_INTERNAL_URL}/api`
+    : "http://localhost:8000/api";
 
 export interface CompanyFundamentals {
   current_price?: number;
