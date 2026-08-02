@@ -8,12 +8,11 @@ terraform {
     }
   }
 
-  # Optional Remote S3 Backend Configuration (Uncomment for Team/Production CI/CD State Locking)
-  # backend "s3" {
-  #   bucket         = "sentellent-terraform-state-bucket"
-  #   key            = "production/terraform.tfstate"
-  #   region         = "ap-south-1"
-  #   dynamodb_table = "sentellent-terraform-locks"
-  #   encrypt        = true
-  # }
+  backend "s3" {
+    bucket         = "sentellent-terraform-state-ap-south-1"
+    key            = "production/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "sentellent-terraform-locks"
+    encrypt        = true
+  }
 }
