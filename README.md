@@ -1,10 +1,6 @@
-# 🚀 Sentellent Alpha
+ # Sentellent: Contextual Agentic AI Indian Stock Analyst
 
-<div align="center">
-
-# AI-Powered Multi-Agent Market Intelligence Platform
-
-### Enterprise-grade Financial Intelligence powered by **FastAPI**, **LangGraph**, **Google Gemini**, **PostgreSQL**, **Next.js**, **AWS**, and **Terraform**
+### Enterprise-Grade Multi-Agent Financial Intelligence Platform powered by Retrieval-Augmented Generation (RAG), LangGraph, Google Gemini, FastAPI, Next.js, PostgreSQL, Docker, Terraform, and AWS.
 
 ---
 
@@ -26,7 +22,7 @@
 
 ---
 
-# 📈 Sentellent Alpha
+# Sentellent Alpha
 
 Sentellent Alpha is an **AI-powered Multi-Agent Stock Market Intelligence Platform** designed to combine deterministic financial analytics, Retrieval-Augmented Generation (RAG), personalized investor memory, and autonomous reasoning into a unified investment research platform.
 
@@ -34,41 +30,35 @@ Unlike traditional stock screeners, Sentellent Alpha combines **structured finan
 
 The platform enables investors to:
 
-- 📊 Analyze company fundamentals
-- 🤖 Interact with AI research agents
-- 📰 Retrieve financial news using vector search
-- 📚 Search SEC reports and company documents
-- 📈 Track personalized watchlists
-- 🧠 Build long-term investor memory
-- 💼 Receive deterministic stock recommendations
-- 🔍 Explore financial ratios with interactive dashboards
-- ☁ Deploy the complete infrastructure on AWS
+-  Analyze company fundamentals
+-  Interact with AI research agents
+-  Retrieve financial news using vector search
+-  Search SEC reports and company documents
+-  Track personalized watchlists
+-  Build long-term investor memory
+-  Receive deterministic stock recommendations
+-  Explore financial ratios with interactive dashboards
+-  Deploy the complete infrastructure on AWS
 
 ---
 
-# 🌐 Live Demo
+#  Live Demo
 
-## Frontend
+## Live Application URL
 
-```
-https://your-vercel-url.vercel.app
-```
+> [https://sentellent-stock-analyst-pi.vercel.app](https://sentellent-stock-analyst-pi.vercel.app)
 
 ## Backend API
 
-```
-https://your-backend-domain/docs
-```
+> [http://sentellent-production-alb-2068419761.ap-south-1.elb.amazonaws.com/docs](http://sentellent-production-alb-2068419761.ap-south-1.elb.amazonaws.com/health/docs)
 
 ## Health Endpoint
 
-```
-https://your-backend-domain/health
-```
+> [http://sentellent-production-alb-2068419761.ap-south-1.elb.amazonaws.com/health](http://sentellent-production-alb-2068419761.ap-south-1.elb.amazonaws.com/health/health)
 
 ---
 
-# 🎯 Key Highlights
+#  Key Highlights
 
 ✔ Enterprise-grade Full Stack Architecture
 
@@ -106,9 +96,9 @@ https://your-backend-domain/health
 
 ---
 
-# ✨ Core Features
+#  Core Features
 
-## 🤖 AI Research Workspace
+##  AI Research Workspace
 
 Conduct conversational financial research powered by LangGraph multi-agent workflows.
 
@@ -126,7 +116,7 @@ Features include:
 
 ---
 
-## 📊 Market Screener
+##  Market Screener
 
 Analyze listed companies using deterministic financial metrics.
 
@@ -145,7 +135,7 @@ Supported metrics include:
 
 ---
 
-## 📚 Knowledge Hub
+##  Knowledge Hub
 
 Semantic search across financial knowledge.
 
@@ -161,7 +151,7 @@ Supports:
 
 ---
 
-## 💼 Portfolio Intelligence
+##  Portfolio Intelligence
 
 Personalized investment workspace.
 
@@ -177,7 +167,7 @@ Includes:
 
 ---
 
-## 📈 Market Analytics
+##  Market Analytics
 
 Interactive dashboards for:
 
@@ -190,7 +180,7 @@ Interactive dashboards for:
 
 ---
 
-## 🧠 Investor Memory
+##  Investor Memory
 
 Persistent investor profiling using AI.
 
@@ -205,7 +195,7 @@ Stores:
 
 ---
 
-## 🔐 Authentication
+##  Authentication
 
 Secure login powered by:
 
@@ -216,7 +206,7 @@ Secure login powered by:
 
 ---
 
-## ☁ Cloud Infrastructure
+##  Cloud Infrastructure
 
 Production deployment includes:
 
@@ -231,7 +221,7 @@ Production deployment includes:
 
 ---
 
-# 📑 Table of Contents
+#  Table of Contents
 
 - [Project Overview](#-sentellent-alpha)
 - [Live Demo](#-live-demo)
@@ -256,7 +246,7 @@ Production deployment includes:
 
 ---
 
-# 📸 Platform Preview
+#  Platform Preview
 
 > The following screenshots demonstrate the major modules of Sentellent Alpha.
 
@@ -291,11 +281,8 @@ It provides:
 
 ---
 
-⭐ If you found this project useful, consider giving it a star on GitHub!
 
----
-
-# 🏗️ System Architecture
+#  System Architecture
 
 Sentellent Alpha follows a cloud-native, microservice-inspired architecture where the frontend, backend, AI services, and infrastructure are completely decoupled.
 
@@ -362,7 +349,7 @@ flowchart TD
 
 ---
 
-# ☁️ AWS Production Architecture
+#  AWS Production Architecture
 
 The production environment is completely hosted on AWS using Infrastructure-as-Code powered by Terraform.
 
@@ -397,7 +384,7 @@ Vercel --> Backend
 
 ---
 
-# 🤖 AI Multi-Agent Workflow
+#  AI Multi-Agent Workflow
 
 Unlike conventional chatbot applications, Sentellent Alpha employs multiple specialized AI agents orchestrated using LangGraph.
 
@@ -448,7 +435,7 @@ Gemini --> Response["AI Response"]
 
 ---
 
-# 🔄 Request Lifecycle
+#  Request Lifecycle
 
 Every request passes through multiple backend services before the final response reaches the frontend.
 
@@ -493,7 +480,7 @@ FE-->>U: Render Dashboard
 
 ---
 
-# 🧩 Technology Stack
+#  Technology Stack
 
 The project is built using a modern cloud-native technology stack.
 
@@ -525,7 +512,7 @@ The project is built using a modern cloud-native technology stack.
 
 ---
 
-# 🔬 Core AI Technologies
+#  Core AI Technologies
 
 Sentellent Alpha integrates multiple AI technologies to provide explainable market intelligence.
 
@@ -585,7 +572,7 @@ This produces an explainable weighted investment score instead of relying solely
 
 ---
 
-# 🔐 Security Architecture
+#  Security Architecture
 
 The platform follows secure authentication and authorization practices.
 
@@ -610,7 +597,7 @@ The platform follows secure authentication and authorization practices.
 
 ---
 
-# 📊 Scalability Highlights
+#  Scalability Highlights
 
 Designed to support enterprise-scale deployment.
 
@@ -636,7 +623,7 @@ Designed to support enterprise-scale deployment.
 
 ---
 
-# 📁 Project Directory Structure
+#  Project Directory Structure
 
 Sentellent Alpha follows a modular architecture that separates the frontend, backend, infrastructure, AI pipeline, and deployment logic into well-defined directories.
 
@@ -695,7 +682,7 @@ sentellent-stock-analyst/
 
 ---
 
-# 📂 Repository Overview
+#  Repository Overview
 
 The project is organized into four major components.
 
@@ -709,7 +696,7 @@ The project is organized into four major components.
 
 ---
 
-# ⚙️ Backend Architecture
+#  Backend Architecture
 
 The backend is responsible for all business logic, AI orchestration, database access, financial analysis, authentication, and data ingestion.
 
@@ -745,7 +732,7 @@ backend
 
 ---
 
-# 🎨 Frontend Architecture
+#  Frontend Architecture
 
 The frontend is built using the latest Next.js App Router architecture.
 
@@ -777,7 +764,7 @@ frontend
 
 ---
 
-# 🤖 AI Components
+#  AI Components
 
 The AI layer is completely modular.
 
@@ -815,7 +802,7 @@ Each component can evolve independently without affecting the remaining workflow
 
 ---
 
-# 🗄 Database Design
+#  Database Design
 
 The PostgreSQL database stores all structured application data.
 
@@ -835,7 +822,7 @@ Major tables include:
 
 ---
 
-# 🔐 Environment Variables
+#  Environment Variables
 
 Create the following files before running the application.
 
@@ -895,7 +882,7 @@ NEXT_PUBLIC_BACKEND_URL=
 
 ---
 
-# 🚀 Running Locally
+#  Running Locally
 
 ## Clone Repository
 
@@ -975,7 +962,7 @@ http://localhost:8000/docs
 
 ---
 
-# 🐳 Docker Deployment
+#  Docker Deployment
 
 Sentellent Alpha supports fully containerized deployment.
 
@@ -995,7 +982,7 @@ This starts:
 
 ---
 
-# 🐳 Backend Startup Sequence
+#  Backend Startup Sequence
 
 When the backend container starts, the following initialization pipeline is executed automatically.
 
@@ -1027,7 +1014,7 @@ The startup script (`entrypoint.sh`) ensures that a newly deployed environment i
 
 ---
 
-# 🔄 Docker Container Workflow
+#  Docker Container Workflow
 
 ```mermaid
 flowchart TD
@@ -1056,7 +1043,7 @@ FastAPI --> PostgreSQL
 
 ---
 
-# 🧪 Running Tests
+#  Running Tests
 
 The backend includes a comprehensive Pytest suite.
 
@@ -1080,7 +1067,7 @@ pytest --cov=app
 
 ---
 
-# 📦 Production Readiness
+#  Production Readiness
 
 The backend is production-ready with:
 
@@ -1096,7 +1083,7 @@ The backend is production-ready with:
 
 ---
 
-# ☁️ AWS Deployment Architecture
+#  AWS Deployment Architecture
 
 Sentellent Alpha is deployed using a production-grade cloud architecture on Amazon Web Services (AWS). The infrastructure is fully automated using **Terraform**, containerized using **Docker**, and continuously deployed through **GitHub Actions**.
 
@@ -1104,7 +1091,7 @@ The deployment follows cloud-native best practices, ensuring scalability, reliab
 
 ---
 
-## 🏗️ Production Infrastructure
+##  Production Infrastructure
 
 ```mermaid
 flowchart TD
@@ -1146,7 +1133,7 @@ Vercel --> FastAPI
 
 ---
 
-# 🏛 AWS Services Used
+#  AWS Services Used
 
 | AWS Service | Purpose |
 |-------------|----------|
@@ -1162,7 +1149,7 @@ Vercel --> FastAPI
 
 ---
 
-# 🌍 Infrastructure as Code (Terraform)
+#  Infrastructure as Code (Terraform)
 
 The complete cloud infrastructure is managed using **Terraform**, enabling reproducible deployments and version-controlled infrastructure.
 
@@ -1187,7 +1174,7 @@ This approach eliminates manual cloud configuration and ensures consistent deplo
 
 ---
 
-# 📦 Deployment Workflow
+#  Deployment Workflow
 
 The deployment pipeline follows a fully automated workflow.
 
@@ -1216,7 +1203,7 @@ Health --> Production["Production Ready"]
 
 ---
 
-# 🔄 GitHub Actions CI/CD Pipeline
+#  GitHub Actions CI/CD Pipeline
 
 The project uses **GitHub Actions** to automate testing, building, and deployment.
 
@@ -1250,7 +1237,7 @@ The frontend deployment pipeline performs:
 
 ---
 
-# 🚀 Deployment Architecture
+#  Deployment Architecture
 
 ```mermaid
 flowchart TD
@@ -1285,7 +1272,7 @@ Vercel --> BackendAPI
 
 ---
 
-# 📸 Deployment Screenshots
+#  Deployment Screenshots
 
 The following screenshots demonstrate the production deployment and cloud infrastructure used by Sentellent Alpha.
 
@@ -1294,7 +1281,7 @@ The following screenshots demonstrate the production deployment and cloud infras
 ## Amazon ECS Cluster
 
 <p align="center">
-  <img src="assets/Deployment/AWS_ECS_1.png" width="900"/>
+  <img src="assets/AWS_ECS_1.png" width="900"/>
 </p>
 
 The ECS Cluster hosts the production FastAPI backend using AWS Fargate. Container orchestration is fully managed by AWS, eliminating the need to manage virtual machines.
@@ -1311,7 +1298,7 @@ The ECS Cluster hosts the production FastAPI backend using AWS Fargate. Containe
 ## ECS Service
 
 <p align="center">
-  <img src="assets/Deployment/AWS_ECS_2.png" width="900"/>
+  <img src="assets/AWS_ECS_2.png" width="900"/>
 </p>
 
 The ECS Service ensures that the required number of backend tasks remain healthy. Rolling deployments automatically replace older containers without downtime.
@@ -1321,7 +1308,7 @@ The ECS Service ensures that the required number of backend tasks remain healthy
 ## ECS Task Definition
 
 <p align="center">
-  <img src="assets/Deployment/AWS_ECS_3.png" width="900"/>
+  <img src="assets/AWS_ECS_3.png" width="900"/>
 </p>
 
 Task Definitions specify CPU, memory allocation, environment variables, networking, IAM permissions, and Docker images used by the backend service.
@@ -1331,7 +1318,7 @@ Task Definitions specify CPU, memory allocation, environment variables, networki
 ## Amazon ECR Repository
 
 <p align="center">
-  <img src="assets/Deployment/AWS_ECR_1.png" width="900"/>
+  <img src="assets/AWS_ECR_1.png" width="900"/>
 </p>
 
 Amazon Elastic Container Registry stores versioned Docker images generated by GitHub Actions before deployment to ECS.
@@ -1339,7 +1326,7 @@ Amazon Elastic Container Registry stores versioned Docker images generated by Gi
 ---
 
 <p align="center">
-  <img src="assets/Deployment/AWS_ECR_2.png" width="900"/>
+  <img src="assets/AWS_ECR_2.png" width="900"/>
 </p>
 
 Image tags enable version tracking and rollback if required.
@@ -1347,7 +1334,7 @@ Image tags enable version tracking and rollback if required.
 ---
 
 <p align="center">
-  <img src="assets/Deployment/AWS_ECR_3.png" width="900"/>
+  <img src="assets/AWS_ECR_3.png" width="900"/>
 </p>
 
 Container images are automatically updated after every successful CI/CD execution.
@@ -1357,7 +1344,7 @@ Container images are automatically updated after every successful CI/CD executio
 ## Amazon RDS PostgreSQL
 
 <p align="center">
-  <img src="assets/Deployment/AWS_RDS_1.png" width="900"/>
+  <img src="assets/AWS_RDS_1.png" width="900"/>
 </p>
 
 Amazon RDS hosts the PostgreSQL database containing companies, financial fundamentals, investor memory, vector embeddings, chat history, and watchlists.
@@ -1365,7 +1352,7 @@ Amazon RDS hosts the PostgreSQL database containing companies, financial fundame
 ---
 
 <p align="center">
-  <img src="assets/Deployment/AWS_RDS_2.png" width="900"/>
+  <img src="assets/AWS_RDS_2.png" width="900"/>
 </p>
 
 The database is deployed within a private subnet and accessed securely through ECS.
@@ -1373,7 +1360,7 @@ The database is deployed within a private subnet and accessed securely through E
 ---
 
 <p align="center">
-  <img src="assets/Deployment/AWS_RDS_3.png" width="900"/>
+  <img src="assets/AWS_RDS_3.png" width="900"/>
 </p>
 
 Database migrations are executed automatically during container startup using Alembic.
@@ -1383,7 +1370,7 @@ Database migrations are executed automatically during container startup using Al
 ## Amazon CloudWatch
 
 <p align="center">
-  <img src="assets/Deployment/AWS_CloudWatch_1.png" width="900"/>
+  <img src="assets/AWS_CloudWatch_1.png" width="900"/>
 </p>
 
 CloudWatch aggregates application logs, deployment logs, and runtime diagnostics from ECS containers.
@@ -1391,7 +1378,7 @@ CloudWatch aggregates application logs, deployment logs, and runtime diagnostics
 ---
 
 <p align="center">
-  <img src="assets/Deployment/AWS_CloudWatch_2.png" width="900"/>
+  <img src="assets/AWS_CloudWatch_2.png" width="900"/>
 </p>
 
 This enables centralized monitoring, troubleshooting, and health verification of production services.
@@ -1401,7 +1388,7 @@ This enables centralized monitoring, troubleshooting, and health verification of
 ## Amazon S3
 
 <p align="center">
-  <img src="assets/Deployment/AWS_S3_1.png" width="900"/>
+  <img src="assets/AWS_S3_1.png" width="900"/>
 </p>
 
 Amazon S3 stores the Terraform remote state, allowing collaborative infrastructure management.
@@ -1409,7 +1396,7 @@ Amazon S3 stores the Terraform remote state, allowing collaborative infrastructu
 ---
 
 <p align="center">
-  <img src="assets/Deployment/AWS_S3_2.png" width="900"/>
+  <img src="assets/AWS_S3_2.png" width="900"/>
 </p>
 
 Remote state ensures infrastructure consistency across deployments.
@@ -1419,7 +1406,7 @@ Remote state ensures infrastructure consistency across deployments.
 ## Amazon DynamoDB
 
 <p align="center">
-  <img src="assets/Deployment/AWS_DynamoDB_1.png" width="900"/>
+  <img src="assets/AWS_DynamoDB_1.png" width="900"/>
 </p>
 
 DynamoDB is used for Terraform state locking, preventing concurrent infrastructure modifications.
@@ -1427,7 +1414,7 @@ DynamoDB is used for Terraform state locking, preventing concurrent infrastructu
 ---
 
 <p align="center">
-  <img src="assets/Deployment/AWS_DynamoDB_2.png" width="900"/>
+  <img src="assets/AWS_DynamoDB_2.png" width="900"/>
 </p>
 
 State locking guarantees safe and conflict-free infrastructure provisioning.
@@ -1446,7 +1433,7 @@ The project uses two independent GitHub Actions workflows.
 ## Backend Workflow
 
 <p align="center">
-  <img src="assets/Deployment/GitHub_Workflow_1.png" width="900"/>
+  <img src="assets/GitHub_Workflow_1.png" width="900"/>
 </p>
 
 This workflow builds, tests, containerizes, and deploys the FastAPI backend to Amazon ECS.
@@ -1454,7 +1441,7 @@ This workflow builds, tests, containerizes, and deploys the FastAPI backend to A
 ---
 
 <p align="center">
-  <img src="assets/Deployment/GitHub_Workflow_2.png" width="900"/>
+  <img src="assets/GitHub_Workflow_2.png" width="900"/>
 </p>
 
 Automated deployment ensures that production always reflects the latest validated code.
@@ -1462,7 +1449,7 @@ Automated deployment ensures that production always reflects the latest validate
 ---
 
 <p align="center">
-  <img src="assets/Deployment/GitHub_Workflow_3.png" width="900"/>
+  <img src="assets/GitHub_Workflow_3.png" width="900"/>
 </p>
 
 Deployment logs provide complete visibility into every CI/CD stage.
@@ -1472,7 +1459,7 @@ Deployment logs provide complete visibility into every CI/CD stage.
 ## GitHub Actions Dashboard
 
 <p align="center">
-  <img src="assets/Deployment/GitHub_Actions.png" width="900"/>
+  <img src="assets/GitHub_Actions.png" width="900"/>
 </p>
 
 The Actions dashboard provides execution history, build duration, deployment status, and failure diagnostics.
@@ -1486,7 +1473,7 @@ The frontend is continuously deployed using Vercel.
 ---
 
 <p align="center">
-  <img src="assets/Deployment/Vercel_Frontend_1.png" width="900"/>
+  <img src="assets/Vercel_Frontend_1.png" width="900"/>
 </p>
 
 The production frontend is built using Next.js 15 and automatically deployed after successful commits.
@@ -1494,14 +1481,14 @@ The production frontend is built using Next.js 15 and automatically deployed aft
 ---
 
 <p align="center">
-  <img src="assets/Deployment/Vercel_Frontend_2.png" width="900"/>
+  <img src="assets/Vercel_Frontend_2.png" width="900"/>
 </p>
 
 Vercel provides automatic HTTPS, global CDN caching, and zero-downtime frontend deployments.
 
 ---
 
-# 📈 Deployment Summary
+#  Deployment Summary
 
 | Component | Platform |
 |------------|----------|
@@ -1519,7 +1506,7 @@ Vercel provides automatic HTTPS, global CDN caching, and zero-downtime frontend 
 
 ---
 
-# 🖥️ User Interface Walkthrough
+#  User Interface Walkthrough
 
 Sentellent Alpha provides a modern, enterprise-inspired interface designed for investors, analysts, and financial researchers. The application follows a consistent dark glassmorphism design language and is fully responsive across desktop devices.
 
@@ -1527,7 +1514,7 @@ Each module has been developed with a specific purpose while maintaining seamles
 
 ---
 
-# 🔐 Login & Authentication
+#  Login & Authentication
 
 <p align="center">
   <img src="assets/UI/A1.png" width="900"/>
@@ -1562,10 +1549,10 @@ Technology Stack
 
 ---
 
-# 📊 Dashboard Overview
+#  Dashboard Overview
 
 <p align="center">
-  <img src="assets/UI/A2.png" width="900"/>
+  <img src="assets/UI/B1.png" width="900"/>
 </p>
 
 The Dashboard acts as the command center of Sentellent Alpha.
@@ -1602,10 +1589,10 @@ Technology
 
 ---
 
-# 📈 Market Intelligence
+#  Market Intelligence
 
 <p align="center">
-  <img src="assets/UI/A3.png" width="900"/>
+  <img src="assets/UI/B2.png" width="900"/>
 </p>
 
 The Market Intelligence module provides a consolidated view of current market conditions.
@@ -1636,11 +1623,15 @@ Technology
 
 ---
 
-# 🤖 AI Research Workspace
+#  AI Research Workspace
 
 <p align="center">
-  <img src="assets/UI/A4.png" width="900"/>
+  <img src="assets/UI/D1.png" width="900"/>
 </p>
+<p align="center">
+  <img src="assets/UI/D2.png" width="900"/>
+</p>
+
 
 The AI Research Workspace enables conversational financial research powered by LangGraph.
 
@@ -1676,10 +1667,10 @@ Technologies
 
 ---
 
-# 📚 Knowledge Hub
+#  Knowledge Hub
 
 <p align="center">
-  <img src="assets/UI/A5.png" width="900"/>
+  <img src="assets/UI/G1.png" width="900"/>
 </p>
 
 The Knowledge Hub manages the Retrieval-Augmented Generation (RAG) knowledge base.
@@ -1709,10 +1700,13 @@ Technologies
 
 ---
 
-# 📊 Company Screener
+#  Company Screener
 
 <p align="center">
-  <img src="assets/UI/A6.png" width="900"/>
+  <img src="assets/UI/E1.png" width="900"/>
+</p>
+<p align="center">
+  <img src="assets/UI/E2.png" width="900"/>
 </p>
 
 The Company Screener enables investors to analyze companies using deterministic financial metrics.
@@ -1744,10 +1738,10 @@ Technologies
 
 ---
 
-# ⭐ AI Recommendation Engine
+#  AI Recommendation Engine
 
 <p align="center">
-  <img src="assets/UI/A7.png" width="900"/>
+  <img src="assets/UI/C3.png" width="900"/>
 </p>
 
 Sentellent Alpha generates explainable investment recommendations using a hybrid deterministic and AI-driven scoring model.
@@ -1781,10 +1775,10 @@ Technology
 
 ---
 
-# 💼 Portfolio & Watchlist
+#  Portfolio & Watchlist
 
 <p align="center">
-  <img src="assets/UI/A8.png" width="900"/>
+  <img src="assets/UI/C1.png" width="900"/>
 </p>
 
 The Portfolio module enables users to build personalized watchlists.
@@ -1815,10 +1809,14 @@ Technology
 
 ---
 
-# 🧠 Investor Preferences
+#  Investor Preferences
 
 <p align="center">
-  <img src="assets/UI/A9.png" width="900"/>
+  <img src="assets/UI/C2.png" width="900"/>
+</p>
+
+<p align="center">
+  <img src="assets/UI/C3.png" width="900"/>
 </p>
 
 Investor Preferences allow the AI system to personalize recommendations.
@@ -1847,10 +1845,10 @@ Technology
 
 ---
 
-# 📜 Activity History
+#  Activity History
 
 <p align="center">
-  <img src="assets/UI/A10.png" width="900"/>
+  <img src="assets/UI/H1.png" width="900"/>
 </p>
 
 The Activity page provides a chronological view of user interactions.
@@ -1877,10 +1875,10 @@ Technology
 
 ---
 
-# 🏗 Engineering Dashboard
+#  Insights Center
 
 <p align="center">
-  <img src="assets/UI/A11.png" width="900"/>
+  <img src="assets/UI/F1.png" width="900"/>
 </p>
 
 This page documents the engineering decisions behind Sentellent Alpha.
@@ -1898,10 +1896,10 @@ This page serves as a technical reference for developers and reviewers.
 
 ---
 
-# 📱 Responsive User Experience
+#  Responsive User Experience
 
 <p align="center">
-  <img src="assets/UI/A12.png" width="900"/>
+  <img src="assets/UI/I1.png" width="900"/>
 </p>
 
 The interface follows a consistent enterprise design language.
@@ -1925,7 +1923,7 @@ Built With
 
 ---
 
-# 🎨 Design Philosophy
+#  Design Philosophy
 
 Sentellent Alpha was designed to resemble modern financial terminals while remaining approachable for everyday investors.
 
@@ -1940,5 +1938,12 @@ Key UI principles include:
 - Reusable component architecture
 
 The result is a user experience that combines enterprise-grade functionality with modern web design best practices.
+
+---
+## Evaluator Access & Test Accounts
+
+Per the challenge specification, pre-configured test user access is available for evaluators:
+- `harisankar@sentellent.com`
+- `naga@sentellent.com`
 
 ---
