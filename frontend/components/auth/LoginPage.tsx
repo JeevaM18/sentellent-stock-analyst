@@ -5,7 +5,7 @@ import { TrendingUp, BarChart2, Bot, Briefcase, BookOpen, ShieldCheck, Database,
 import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginAsEvaluator } = useAuth();
   const [loggingIn, setLoggingIn] = useState(false);
 
   const handleLoginClick = async () => {
@@ -61,7 +61,7 @@ export default function LoginPage() {
         </div>
 
         {/* Primary Google Login Button */}
-        <div className="flex flex-col gap-3 w-full">
+        <div className="flex flex-col gap-4 w-full">
           <button
             onClick={handleLoginClick}
             disabled={loggingIn}
@@ -92,6 +92,31 @@ export default function LoginPage() {
             <span>Continue with Google</span>
             <ArrowRight className="h-4 w-4 ml-1" />
           </button>
+
+          {/* Or Sign In as Evaluator Section */}
+          <div className="flex flex-col gap-3 w-full border-t border-white/10 pt-4">
+            <span className="text-xs font-semibold text-slate-400">
+              Or Sign In as Evaluator:
+            </span>
+
+            <div className="grid grid-cols-2 gap-3 w-full">
+              <button
+                onClick={() => loginAsEvaluator("hari", "Hari Sankar")}
+                disabled={loggingIn}
+                className="py-3 px-4 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-xs border border-slate-700/80 shadow-inner flex items-center justify-center transition-all cursor-pointer hover:border-blue-500/50"
+              >
+                Hari Sankar (Test User)
+              </button>
+
+              <button
+                onClick={() => loginAsEvaluator("naga", "Naga")}
+                disabled={loggingIn}
+                className="py-3 px-4 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-xs border border-slate-700/80 shadow-inner flex items-center justify-center transition-all cursor-pointer hover:border-blue-500/50"
+              >
+                Naga (Test User)
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Feature Teaser Cards */}

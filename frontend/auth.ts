@@ -13,6 +13,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         ]
       : []),
     CredentialsProvider({
+      id: "demo-access",
+      name: "Demo Evaluator Account",
+      credentials: {
+        demoUser: { label: "Demo User", type: "text" },
+      },
+      async authorize(credentials) {
+        const key = (credentials?.demoUser as string)?.toLowerCase() || "hari";
+        const isNaga = key.includes("naga");
+        const email = isNaga ? "naga.demo@sentellent.ai" : "hari.demo@sentellent.ai";
+        const name = isNaga ? "Naga" : "Hari Sankar";
+        const picture = isNaga
+          ? "https://api.dicebear.com/7.x/avataaars/svg?seed=Christopher"
+          : "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix";
+
+        return {
+          id: email,
+          email: email,
+          name: name,
+          image: picture,
+        };
+      },
+    }),
+    CredentialsProvider({
       id: "google-dev",
       name: "Google Account Login",
       credentials: {

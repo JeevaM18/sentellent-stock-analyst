@@ -9,6 +9,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   login: () => Promise<void>;
+  loginAsEvaluator: (email: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   syncUser: () => Promise<void>;
 }
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   loading: true,
   login: async () => {},
+  loginAsEvaluator: async () => {},
   logout: async () => {},
   syncUser: async () => {},
 });
@@ -92,6 +94,36 @@ function AuthProviderInternal({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleEvaluatorLogin = async (demoKey: string, demoName: string) => {
+    setLoading(true);
+    try {
+      // 1. Sign in via NextAuth demo-access CredentialsProvider
+      await signIn("demo-access", {
+        demoUser: demoKey,
+        redirect: false,
+      });
+
+      // 2. Provision/fetch demo user in PostgreSQL backend
+      const synced = await AuthService.demoLogin(demoKey);
+      if (synced) {
+        setDbUser(synced);
+      }
+    } catch (err) {
+      console.warn("Evaluator demo login fallback:", err);
+      const isNaga = demoKey.toLowerCase().includes("naga");
+      const email = isNaga ? "naga.demo@sentellent.ai" : "hari.demo@sentellent.ai";
+      setDbUser({
+        id: email,
+        email: email,
+        name: demoName,
+        created: false,
+      });
+    } finally {
+      setLoading(false);
+      window.location.href = "/";
+    }
+  };
+
   const handleLogout = async () => {
     setDbUser(null);
     setAuthToken("dev-sentellent-auth-token");
@@ -117,6 +149,7 @@ function AuthProviderInternal({ children }: { children: React.ReactNode }) {
     isAuthenticated: isAuth,
     loading: status === "loading" && !dbUser,
     login: handleLogin,
+    loginAsEvaluator: handleEvaluatorLogin,
     logout: handleLogout,
     syncUser,
   };

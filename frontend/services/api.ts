@@ -326,6 +326,11 @@ export const AuthService = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  demoLogin: (demoUser: string) =>
+    request<UserResponse>("/api/auth/demo-login", {
+      method: "POST",
+      body: JSON.stringify({ demo_user: demoUser }),
+    }),
 };
 
 // Backward-compatible fallback api object

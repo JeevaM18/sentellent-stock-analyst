@@ -184,7 +184,7 @@ export default function MissionControlPage() {
               Welcome back, {firstName}
             </h1>
             <span className="text-xs text-slate-400">
-              Last Login: <strong className="text-slate-200">02 Aug 2026, 10:42 AM</strong> • {user?.email}
+              {user?.email}
             </span>
           </div>
         </div>
